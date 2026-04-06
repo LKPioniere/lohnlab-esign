@@ -37,8 +37,8 @@ export const RecipientRemovedFromDocumentTemplate = ({
                 <Img src={branding.brandingLogo} alt="Branding Logo" className="mb-4 h-6" />
               ) : (
                 <Img
-                  src={getAssetUrl('/static/logo.png')}
-                  alt="Documenso Logo"
+                  src={getAssetUrl('/static/logo-email.png')}
+                  alt="LohnLab eSign Logo"
                   className="mb-4 h-6"
                 />
               )}
@@ -46,7 +46,7 @@ export const RecipientRemovedFromDocumentTemplate = ({
               <TemplateDocumentImage className="mt-6" assetBaseUrl={assetBaseUrl} />
 
               <Section>
-                <Text className="text-primary mx-auto mb-0 max-w-[80%] text-center text-lg font-semibold">
+                <Text className="mx-auto mb-0 max-w-[80%] text-center text-lg font-semibold text-primary">
                   <Trans>
                     {inviterName} has removed you from the document
                     <br />"{documentName}"

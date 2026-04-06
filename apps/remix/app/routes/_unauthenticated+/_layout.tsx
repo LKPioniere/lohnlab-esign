@@ -18,6 +18,14 @@ export default function Layout() {
           />
         </div>
 
+        <div className="mb-8 flex items-end justify-center gap-2.5">
+          <img src="/static/logo-dark.png" alt="LohnLab" className="h-10 dark:hidden" />
+          <img src="/static/logo.png" alt="LohnLab" className="hidden h-10 dark:block" />
+          <span className="-mb-[3px] text-2xl font-light leading-none text-muted-foreground dark:text-documenso">
+            eSign
+          </span>
+        </div>
+
         <div className="relative w-full">
           <Outlet />
         </div>

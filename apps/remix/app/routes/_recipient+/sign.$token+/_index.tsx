@@ -373,18 +373,15 @@ const SigningPageV1 = ({ data }: { data: Awaited<ReturnType<typeof handleV1Loade
           </p>
 
           {user ? (
-            <Link to="/" className="mt-36 text-documenso-700 hover:text-documenso-600">
+            <Link to="/" className="mt-36 text-documenso hover:text-documenso/80">
               <Trans>Go Back Home</Trans>
             </Link>
           ) : (
             <p className="mt-36 text-sm text-muted-foreground/60">
               <Trans>
                 Want to send slick signing links like this one?{' '}
-                <Link
-                  to="https://documenso.com"
-                  className="text-documenso-700 hover:text-documenso-600"
-                >
-                  Check out Documenso
+                <Link to="https://documenso.com" className="text-documenso hover:text-documenso/80">
+                  Check out LohnLab eSign
                 </Link>
                 .
               </Trans>
@@ -473,18 +470,15 @@ const SigningPageV2 = ({ data }: { data: Awaited<ReturnType<typeof handleV2Loade
           </p>
 
           {user ? (
-            <Link to="/" className="mt-36 text-documenso-700 hover:text-documenso-600">
+            <Link to="/" className="mt-36 text-documenso hover:text-documenso/80">
               <Trans>Go Back Home</Trans>
             </Link>
           ) : (
             <p className="mt-36 text-sm text-muted-foreground/60">
               <Trans>
                 Want to send slick signing links like this one?{' '}
-                <Link
-                  to="https://documenso.com"
-                  className="text-documenso-700 hover:text-documenso-600"
-                >
-                  Check out Documenso
+                <Link to="https://documenso.com" className="text-documenso hover:text-documenso/80">
+                  Check out LohnLab eSign
                 </Link>
                 .
               </Trans>

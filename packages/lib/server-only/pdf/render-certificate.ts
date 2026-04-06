@@ -333,7 +333,7 @@ const renderColumnTwo = (options: RenderColumnOptions) => {
       y: 2,
       width: maxSignatureWidth,
       height: signatureHeight,
-      stroke: 'rgba(122, 196, 85, 0.6)',
+      stroke: 'rgba(32, 55, 185, 0.6)',
       strokeWidth: 1,
       cornerRadius: 8,
     });
@@ -344,7 +344,7 @@ const renderColumnTwo = (options: RenderColumnOptions) => {
       y: 0,
       width: maxSignatureWidth + 4,
       height: signatureHeight + 4,
-      stroke: 'rgba(122, 196, 85, 0.1)',
+      stroke: 'rgba(32, 55, 185, 0.1)',
       strokeWidth: 4,
       cornerRadius: 8,
     });
@@ -580,7 +580,7 @@ const renderBranding = async ({ qrToken, i18n }: { qrToken: string | null; i18n:
     height: brandingHeight,
   });
 
-  const logoPath = path.join(process.cwd(), 'public/static/logo.png');
+  const logoPath = path.join(process.cwd(), 'public/static/logo-email.png');
   const logo = fs.readFileSync(logoPath);
 
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions

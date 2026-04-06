@@ -53,11 +53,11 @@ export default function PublicProfileLayout() {
               to="/"
               className="rounded-md ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 md:inline"
             >
-              <BrandingLogo className="hidden h-6 w-auto sm:block" />
+              <BrandingLogo className="hidden sm:flex" logoClassName="h-6 w-auto" />
 
               <img
                 src={LogoIcon}
-                alt="Documenso Logo"
+                alt="LohnLab eSign"
                 width={48}
                 height={48}
                 className="h-10 w-auto sm:hidden dark:invert"

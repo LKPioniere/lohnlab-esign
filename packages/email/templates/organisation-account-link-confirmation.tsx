@@ -37,7 +37,7 @@ export const OrganisationAccountLinkConfirmationTemplate = ({
   const previewText =
     type === 'create'
       ? msg`A request has been made to create an account for you`
-      : msg`A request has been made to link your Documenso account`;
+      : msg`A request has been made to link your LohnLab eSign account`;
 
   return (
     <Html>
@@ -52,7 +52,7 @@ export const OrganisationAccountLinkConfirmationTemplate = ({
               <TemplateImage
                 assetBaseUrl={assetBaseUrl}
                 className="mb-4 h-6 p-2"
-                staticAsset="logo.png"
+                staticAsset="logo-email.png"
               />
             )}
 
@@ -69,7 +69,7 @@ export const OrganisationAccountLinkConfirmationTemplate = ({
                 {type === 'create' ? (
                   <Trans>Account creation request</Trans>
                 ) : (
-                  <Trans>Link your Documenso account</Trans>
+                  <Trans>Link your LohnLab eSign account</Trans>
                 )}
               </Text>
 
@@ -82,7 +82,7 @@ export const OrganisationAccountLinkConfirmationTemplate = ({
                 ) : (
                   <Trans>
                     <span className="font-bold">{organisationName}</span> has requested to link your
-                    current Documenso account to their organisation.
+                    current LohnLab eSign account to their organisation.
                   </Trans>
                 )}
               </Text>
@@ -110,7 +110,7 @@ export const OrganisationAccountLinkConfirmationTemplate = ({
 
                 <Text className="mt-2 text-sm">
                   <Trans>
-                    You can unlink your account at any time in your security settings on Documenso{' '}
+                    You can unlink your account at any time in your security settings on LohnLab eSign{' '}
                     <Link href={`${assetBaseUrl}/settings/security/linked-accounts`}>here.</Link>
                   </Trans>
                 </Text>
@@ -118,7 +118,7 @@ export const OrganisationAccountLinkConfirmationTemplate = ({
 
               <Section className="mb-6 mt-8 text-center">
                 <Button
-                  className="bg-documenso-500 inline-flex items-center justify-center rounded-lg px-6 py-3 text-center text-sm font-medium text-black no-underline"
+                  className="inline-flex items-center justify-center rounded-lg bg-documenso-500 px-6 py-3 text-center text-sm font-medium text-black no-underline"
                   href={confirmationLink}
                 >
                   <Trans>Review request</Trans>

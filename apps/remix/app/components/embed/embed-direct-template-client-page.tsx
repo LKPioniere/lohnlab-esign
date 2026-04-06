@@ -539,7 +539,7 @@ export const EmbedDirectTemplateClientPage = ({
           <span>
             <Trans>Powered by</Trans>
           </span>
-          <BrandingLogo className="ml-2 inline-block h-[14px]" />
+          <BrandingLogo className="ml-2 inline-flex" logoClassName="h-[14px]" hideESign />
         </div>
       )}
     </div>

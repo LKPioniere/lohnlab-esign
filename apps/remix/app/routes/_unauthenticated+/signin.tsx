@@ -86,13 +86,10 @@ export default function SignIn({ loaderData }: Route.ComponentProps) {
           </Alert>
         )}
 
-        <h1 className="text-2xl font-semibold">
+        <h1 className="text-center text-2xl font-semibold">
           <Trans>Sign in to your account</Trans>
         </h1>
 
-        <p className="mt-2 text-sm text-muted-foreground">
-          <Trans>Welcome back, we are lucky to have you.</Trans>
-        </p>
         <hr className="-mx-6 my-4" />
 
         <SignInForm
@@ -109,7 +106,7 @@ export default function SignIn({ loaderData }: Route.ComponentProps) {
               Don't have an account?{' '}
               <Link
                 to={returnTo ? `/signup?returnTo=${encodeURIComponent(returnTo)}` : '/signup'}
-                className="text-documenso-700 duration-200 hover:opacity-70"
+                className="text-documenso duration-200 hover:opacity-70"
               >
                 Sign up
               </Link>

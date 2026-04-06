@@ -37,8 +37,8 @@ export const ResetPasswordTemplate = ({
                 <Img src={branding.brandingLogo} alt="Branding Logo" className="mb-4 h-6" />
               ) : (
                 <Img
-                  src={getAssetUrl('/static/logo.png')}
-                  alt="Documenso Logo"
+                  src={getAssetUrl('/static/logo-email.png')}
+                  alt="LohnLab eSign Logo"
                   className="mb-4 h-6"
                 />
               )}
