@@ -31,7 +31,7 @@ exports.main = async (context = {}) => {
 
     const data = await response.json();
 
-    const templates = (data.templates || data || []).map((t) => ({
+    const templates = (data.data || data.templates || []).map((t) => ({
       id: t.id,
       title: t.title || t.name || 'Unbenannt',
     }));
