@@ -20,11 +20,11 @@ WORKDIR /app
 
 COPY . .
 
-RUN npm install -g "turbo@^1.9.3"
+RUN npm install -g "turbo@^2.9.5"
 
 # Outputs to the /out folder
 # source: https://turbo.build/repo/docs/reference/command-line-reference/prune#--docker
-RUN turbo prune --scope=@documenso/remix --docker
+RUN turbo prune @documenso/remix --docker
 
 ###########################
 #   INSTALLER CONTAINER   #
@@ -80,7 +80,7 @@ COPY --from=builder /app/out/full/ .
 # Finally copy the turbo.json file so that we can run turbo commands
 COPY turbo.json turbo.json
 
-RUN npm install -g "turbo@^1.9.3"
+RUN npm install -g "turbo@^2.9.5"
 
 RUN turbo run build --filter=@documenso/remix...
 
