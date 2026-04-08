@@ -8,6 +8,7 @@ import { type FileRejection, useDropzone } from 'react-dropzone';
 import { useFormContext } from 'react-hook-form';
 
 import { APP_DOCUMENT_UPLOAD_SIZE_LIMIT } from '@documenso/lib/constants/app';
+import { DOCUMENT_UPLOAD_ACCEPT } from '@documenso/lib/constants/document-types';
 import { buildDropzoneRejectionDescription } from '@documenso/ui/lib/handle-dropzone-rejection';
 import { cn } from '@documenso/ui/lib/utils';
 import { Button } from '@documenso/ui/primitives/button';
@@ -115,9 +116,7 @@ export const ConfigureDocumentUpload = ({ isSubmitting = false }: ConfigureDocum
   };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    accept: {
-      'application/pdf': ['.pdf'],
-    },
+    accept: DOCUMENT_UPLOAD_ACCEPT,
     maxSize: APP_DOCUMENT_UPLOAD_SIZE_LIMIT * 1024 * 1024,
     multiple: false,
     disabled: isSubmitting || isLoading || isPersisted,
@@ -184,7 +183,8 @@ export const ConfigureDocumentUpload = ({ isSubmitting = false }: ConfigureDocum
                               <Trans>This document cannot be changed</Trans>
                             ) : (
                               <Trans>
-                                .PDF documents accepted (max {APP_DOCUMENT_UPLOAD_SIZE_LIMIT}MB)
+                                PDF, Word, ODT, RTF accepted (max {APP_DOCUMENT_UPLOAD_SIZE_LIMIT}
+                                MB)
                               </Trans>
                             )}
                           </p>

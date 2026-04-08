@@ -12,6 +12,7 @@ import { useEnvelopeAutosave } from '@documenso/lib/client-only/hooks/use-envelo
 import { useCurrentEnvelopeEditor } from '@documenso/lib/client-only/providers/envelope-editor-provider';
 import { useCurrentOrganisation } from '@documenso/lib/client-only/providers/organisation';
 import { APP_DOCUMENT_UPLOAD_SIZE_LIMIT } from '@documenso/lib/constants/app';
+import { DOCUMENT_UPLOAD_ACCEPT, isConvertibleDocument } from '@documenso/lib/constants/document-types';
 import type { TEditorEnvelope } from '@documenso/lib/types/envelope-editor';
 import { nanoid } from '@documenso/lib/universal/id';
 import { megabytesToBytes } from '@documenso/lib/universal/unit-convertions';
@@ -33,6 +34,7 @@ import { DocumentDropzone } from '@documenso/ui/primitives/document-dropzone';
 import { useToast } from '@documenso/ui/primitives/use-toast';
 
 import { EnvelopeItemDeleteDialog } from '~/components/dialogs/envelope-item-delete-dialog';
+import { DocumentConversionProgressCard } from '~/components/general/document/document-conversion-progress-card';
 
 import { EnvelopeEditorRecipientForm } from './envelope-editor-recipient-form';
 import { EnvelopeItemTitleInput } from './envelope-editor-title-input';
@@ -81,8 +83,10 @@ export const EnvelopeEditorUploadPage = () => {
 
   const replacingItemIdRef = useRef<string | null>(null);
 
+  const [isConverting, setIsConverting] = useState(false);
+
   const { open: openReplaceFilePicker, getInputProps: getReplaceInputProps } = useDropzone({
-    accept: { 'application/pdf': ['.pdf'] },
+    accept: DOCUMENT_UPLOAD_ACCEPT,
     maxFiles: 1,
     maxSize: megabytesToBytes(APP_DOCUMENT_UPLOAD_SIZE_LIMIT),
     multiple: false,
@@ -165,10 +169,14 @@ export const EnvelopeEditorUploadPage = () => {
       data: TEditorEnvelope['envelopeItems'][number]['data'] | null;
     })[] = await Promise.all(
       files.map(async (file) => {
+        const title = isConvertibleDocument(file.type)
+          ? file.name.replace(/\.[^/.]+$/, '.pdf')
+          : file.name;
+
         return {
           id: nanoid(),
           envelopeItemId: isEmbedded ? `${PRESIGNED_ENVELOPE_ITEM_ID_PREFIX}${nanoid()}` : null,
-          title: file.name,
+          title,
           file,
           isUploading: isEmbedded ? false : true,
           isReplacing: false,
@@ -180,6 +188,11 @@ export const EnvelopeEditorUploadPage = () => {
     );
 
     setLocalFiles((prev) => [...prev, ...newUploadingFiles]);
+
+    // Check if any file requires conversion and is going to be uploaded
+    if (!isEmbedded && files.some((file) => isConvertibleDocument(file.type))) {
+      setIsConverting(true);
+    }
 
     // Directly commit the files for embedded documents since those are not uploaded
     // until the end of the embedded flow.
@@ -213,7 +226,9 @@ export const EnvelopeEditorUploadPage = () => {
       formData.append('files', file);
     }
 
-    const createPromise = createEnvelopeItems(formData);
+    const createPromise = createEnvelopeItems(formData).finally(() => {
+      setIsConverting(false);
+    });
 
     registerPendingMutation(createPromise);
 
@@ -256,31 +271,39 @@ export const EnvelopeEditorUploadPage = () => {
       prev.map((f) => (f.envelopeItemId === envelopeItemId ? { ...f, isReplacing: true } : f)),
     );
 
+    if (!isEmbedded && isConvertibleDocument(file.type)) {
+      setIsConverting(true);
+    }
+
     try {
       if (isEmbedded) {
-        // For embedded mode, store the file data locally on the envelope item.
-        // The actual replacement will happen when the embed flow submits.
         const arrayBuffer = await file.arrayBuffer();
         const data = new Uint8Array(arrayBuffer.slice(0));
 
-        // Count pages in the new PDF to remove out-of-bounds fields.
-        const { PDF } = await import('@libpdf/core');
-        const pdfDoc = await PDF.load(data);
-        const newPageCount = pdfDoc.getPageCount();
+        if (file.type === 'application/pdf') {
+          const { PDF } = await import('@libpdf/core');
+          const pdfDoc = await PDF.load(data);
+          const newPageCount = pdfDoc.getPageCount();
 
-        // Remove fields that are on pages beyond the new PDF's page count.
-        const remainingFields = envelope.fields.filter(
-          (field) => field.envelopeItemId !== envelopeItemId || field.page <= newPageCount,
-        );
+          const remainingFields = envelope.fields.filter(
+            (field) => field.envelopeItemId !== envelopeItemId || field.page <= newPageCount,
+          );
 
-        setLocalEnvelope({
-          envelopeItems: envelope.envelopeItems.map((item) =>
-            item.id === envelopeItemId ? { ...item, data } : item,
-          ),
-          fields: remainingFields,
-        });
+          setLocalEnvelope({
+            envelopeItems: envelope.envelopeItems.map((item) =>
+              item.id === envelopeItemId ? { ...item, data } : item,
+            ),
+            fields: remainingFields,
+          });
 
-        editorFields.resetForm(remainingFields);
+          editorFields.resetForm(remainingFields);
+        } else {
+          setLocalEnvelope({
+            envelopeItems: envelope.envelopeItems.map((item) =>
+              item.id === envelopeItemId ? { ...item, data } : item,
+            ),
+          });
+        }
 
         return;
       }
@@ -304,7 +327,7 @@ export const EnvelopeEditorUploadPage = () => {
 
       toast({
         title: t`Replace failed`,
-        description: t`Something went wrong while replacing the PDF`,
+        description: t`Something went wrong while replacing the document`,
         duration: 5000,
         variant: 'destructive',
       });
@@ -312,6 +335,7 @@ export const EnvelopeEditorUploadPage = () => {
       setLocalFiles((prev) =>
         prev.map((f) => (f.envelopeItemId === envelopeItemId ? { ...f, isReplacing: false } : f)),
       );
+      setIsConverting(false);
     }
   };
 
@@ -653,6 +677,8 @@ export const EnvelopeEditorUploadPage = () => {
           </Button>
         </div>
       )}
+
+      <DocumentConversionProgressCard isConverting={isConverting} />
     </div>
   );
 };

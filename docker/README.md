@@ -1,6 +1,8 @@
-# Docker Setup for Documenso
+# Docker Setup for LohnLab eSign
 
-The following guide will walk you through setting up Documenso using Docker. You can choose between a production setup using Docker Compose or a standalone container.
+> This project is a modified fork of [Documenso](https://github.com/documenso/documenso) by [Documenso Inc.](https://documenso.com), licensed under [AGPL-3.0](../LICENSE).
+
+The following guide will walk you through setting up the application using Docker. You can choose between a production setup using Docker Compose or a standalone container.
 
 ## Prerequisites
 

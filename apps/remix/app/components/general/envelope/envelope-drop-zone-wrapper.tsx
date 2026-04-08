@@ -14,6 +14,8 @@ import { useAnalytics } from '@documenso/lib/client-only/hooks/use-analytics';
 import { useCurrentOrganisation } from '@documenso/lib/client-only/providers/organisation';
 import { useSession } from '@documenso/lib/client-only/providers/session';
 import { APP_DOCUMENT_UPLOAD_SIZE_LIMIT, IS_BILLING_ENABLED } from '@documenso/lib/constants/app';
+import { DOCUMENT_UPLOAD_ACCEPT } from '@documenso/lib/constants/document-types';
+import { isConvertibleDocument } from '@documenso/lib/constants/document-types';
 import { DEFAULT_DOCUMENT_TIME_ZONE, TIME_ZONES } from '@documenso/lib/constants/time-zones';
 import { AppError, AppErrorCode } from '@documenso/lib/errors/app-error';
 import { megabytesToBytes } from '@documenso/lib/universal/unit-convertions';
@@ -24,6 +26,7 @@ import { buildDropzoneRejectionDescription } from '@documenso/ui/lib/handle-drop
 import { cn } from '@documenso/ui/lib/utils';
 import { useToast } from '@documenso/ui/primitives/use-toast';
 
+import { DocumentConversionProgressCard } from '~/components/general/document/document-conversion-progress-card';
 import { useCurrentTeam } from '~/providers/team';
 
 export interface EnvelopeDropZoneWrapperProps {
@@ -49,6 +52,7 @@ export const EnvelopeDropZoneWrapper = ({
   const organisation = useCurrentOrganisation();
 
   const [isLoading, setIsLoading] = useState(false);
+  const [isConverting, setIsConverting] = useState(false);
 
   const userTimezone =
     TIME_ZONES.find((timezone) => timezone === Intl.DateTimeFormat().resolvedOptions().timeZone) ??
@@ -69,10 +73,19 @@ export const EnvelopeDropZoneWrapper = ({
     try {
       setIsLoading(true);
 
+      const hasConvertibleFiles = files.some((file) => isConvertibleDocument(file.type));
+      if (hasConvertibleFiles) {
+        setIsConverting(true);
+      }
+
+      const title = isConvertibleDocument(files[0].type)
+        ? files[0].name.replace(/\.[^/.]+$/, '.pdf')
+        : files[0].name;
+
       const payload = {
         folderId,
         type,
-        title: files[0].name,
+        title,
         meta: {
           timezone: userTimezone,
         },
@@ -138,6 +151,7 @@ export const EnvelopeDropZoneWrapper = ({
       });
     } finally {
       setIsLoading(false);
+      setIsConverting(false);
     }
   };
 
@@ -171,9 +185,7 @@ export const EnvelopeDropZoneWrapper = ({
     });
   };
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    accept: {
-      'application/pdf': ['.pdf'],
-    },
+    accept: DOCUMENT_UPLOAD_ACCEPT,
     multiple: true,
     maxSize: megabytesToBytes(APP_DOCUMENT_UPLOAD_SIZE_LIMIT),
     maxFiles: maximumEnvelopeItemCount,
@@ -200,7 +212,7 @@ export const EnvelopeDropZoneWrapper = ({
             </h2>
 
             <p className="text-md mt-4 text-muted-foreground">
-              <Trans>Drag and drop your PDF file here</Trans>
+              <Trans>Drag and drop your document here</Trans>
             </p>
 
             {isUploadDisabled && IS_BILLING_ENABLED() && (
@@ -226,7 +238,7 @@ export const EnvelopeDropZoneWrapper = ({
         </div>
       )}
 
-      {isLoading && (
+      {isLoading && !isConverting && (
         <div className="absolute inset-0 z-50 bg-muted/30 backdrop-blur-[2px]">
           <div className="pointer-events-none flex h-1/2 w-full flex-col items-center justify-center">
             <Loader className="h-12 w-12 animate-spin text-primary" />
@@ -236,6 +248,12 @@ export const EnvelopeDropZoneWrapper = ({
           </div>
         </div>
       )}
+
+      {isConverting && (
+        <div className="fixed inset-0 z-[9998] bg-muted/30 backdrop-blur-[2px]" />
+      )}
+
+      <DocumentConversionProgressCard isConverting={isConverting} />
     </div>
   );
 };

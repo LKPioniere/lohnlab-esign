@@ -1,6 +1,11 @@
 import { useEffect } from 'react';
 
 import { Trans, useLingui } from '@lingui/react/macro';
+import {
+  AlignCenterIcon,
+  AlignLeftIcon,
+  AlignRightIcon,
+} from 'lucide-react';
 import { type Control, useFormContext } from 'react-hook-form';
 
 import { FIELD_MIN_LINE_HEIGHT } from '@documenso/lib/types/field-meta';
@@ -30,6 +35,25 @@ import {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type FormControlType = Control<any>;
 
+const FONT_SIZE_OPTIONS = [
+  { value: 'auto', label: 'Automatisch' },
+  { value: '8', label: '8' },
+  { value: '10', label: '10' },
+  { value: '12', label: '12' },
+  { value: '14', label: '14' },
+  { value: '16', label: '16' },
+  { value: '18', label: '18' },
+  { value: '20', label: '20' },
+  { value: '24', label: '24' },
+  { value: '28', label: '28' },
+  { value: '32', label: '32' },
+  { value: '36', label: '36' },
+  { value: '48', label: '48' },
+  { value: '64', label: '64' },
+  { value: '72', label: '72' },
+  { value: '96', label: '96' },
+] as const;
+
 export const EditorGenericFontSizeField = ({
   formControl,
   className,
@@ -49,18 +73,23 @@ export const EditorGenericFontSizeField = ({
             <Trans>Font Size</Trans>
           </FormLabel>
           <FormControl>
-            <Input
-              data-testid="field-form-fontSize"
-              type="number"
-              min={8}
-              max={96}
-              className="bg-background"
-              placeholder={t`Field font size`}
-              {...field}
-              onChange={(e) => {
-                field.onChange(Number(e.target.value));
+            <Select
+              value={field.value === undefined || field.value === null ? 'auto' : String(field.value)}
+              onValueChange={(value) => {
+                field.onChange(value === 'auto' ? undefined : Number(value));
               }}
-            />
+            >
+              <SelectTrigger data-testid="field-form-fontSize">
+                <SelectValue placeholder={t`Automatic`} />
+              </SelectTrigger>
+              <SelectContent>
+                {FONT_SIZE_OPTIONS.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.value === 'auto' ? t`Automatic` : option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </FormControl>
           <FormMessage />
         </FormItem>
@@ -94,13 +123,22 @@ export const EditorGenericTextAlignField = ({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="left">
-                  <Trans>Left</Trans>
+                  <span className="flex items-center gap-2">
+                    <AlignLeftIcon className="h-4 w-4" />
+                    <Trans>Left</Trans>
+                  </span>
                 </SelectItem>
                 <SelectItem value="center">
-                  <Trans>Center</Trans>
+                  <span className="flex items-center gap-2">
+                    <AlignCenterIcon className="h-4 w-4" />
+                    <Trans>Center</Trans>
+                  </span>
                 </SelectItem>
                 <SelectItem value="right">
-                  <Trans>Right</Trans>
+                  <span className="flex items-center gap-2">
+                    <AlignRightIcon className="h-4 w-4" />
+                    <Trans>Right</Trans>
+                  </span>
                 </SelectItem>
               </SelectContent>
             </Select>

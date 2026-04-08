@@ -6,6 +6,7 @@ import type { TCheckboxFieldMeta } from '../../types/field-meta';
 import { parseCheckboxCustomText } from '../../utils/fields';
 import {
   createFieldHoverInteraction,
+  createRequiredIndicator,
   konvaTextFill,
   konvaTextFontFamily,
   upsertFieldGroup,
@@ -209,6 +210,11 @@ export const renderCheckboxFieldElement = (
     fieldGroup.add(checkmark);
     fieldGroup.add(text);
   });
+
+  const requiredIndicator = createRequiredIndicator(field, options);
+  if (requiredIndicator) {
+    fieldGroup.add(requiredIndicator);
+  }
 
   if (color !== 'readOnly' && mode !== 'export') {
     createFieldHoverInteraction({ fieldGroup, fieldRect, options });

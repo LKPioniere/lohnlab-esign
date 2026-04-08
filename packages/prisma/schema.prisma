@@ -513,7 +513,7 @@ model DocumentMeta {
   subject                String?
   message                String?
   timezone               String?              @default("Etc/UTC") @db.Text
-  dateFormat             String?              @default("yyyy-MM-dd hh:mm a") @db.Text
+  dateFormat             String?              @default("dd.MM.yyyy") @db.Text
   redirectUrl            String?
   signingOrder           DocumentSigningOrder @default(PARALLEL)
   allowDictateNextSigner Boolean              @default(false)
@@ -522,7 +522,7 @@ model DocumentMeta {
   uploadSignatureEnabled Boolean @default(true)
   drawSignatureEnabled   Boolean @default(true)
 
-  language           String                     @default("en")
+  language           String                     @default("de")
   distributionMethod DocumentDistributionMethod @default(EMAIL)
 
   emailSettings Json? /// [DocumentEmailSettings] @zod.custom.use(ZDocumentEmailSettingsSchema)
@@ -831,7 +831,7 @@ model OrganisationGlobalSettings {
   organisation Organisation?
 
   documentVisibility        DocumentVisibility @default(EVERYONE)
-  documentLanguage          String             @default("en")
+  documentLanguage          String             @default("de")
   includeSenderDetails      Boolean            @default(true)
   includeSigningCertificate Boolean            @default(true)
   includeAuditLog           Boolean            @default(false)

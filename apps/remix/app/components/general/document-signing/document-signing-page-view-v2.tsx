@@ -23,6 +23,7 @@ import { Separator } from '@documenso/ui/primitives/separator';
 
 import { EnvelopeDownloadDialog } from '~/components/dialogs/envelope-download-dialog';
 import { SignFieldCheckboxDialog } from '~/components/dialogs/sign-field-checkbox-dialog';
+import { SignFieldDateDialog } from '~/components/dialogs/sign-field-date-dialog';
 import { SignFieldDropdownDialog } from '~/components/dialogs/sign-field-dropdown-dialog';
 import { SignFieldEmailDialog } from '~/components/dialogs/sign-field-email-dialog';
 import { SignFieldInitialsDialog } from '~/components/dialogs/sign-field-initials-dialog';
@@ -91,6 +92,7 @@ export const DocumentSigningPageViewV2 = () => {
       <SignFieldDropdownDialog.Root />
       <SignFieldSignatureDialog.Root />
       <SignFieldCheckboxDialog.Root />
+      <SignFieldDateDialog.Root />
 
       <EnvelopeSignerHeader />
 
@@ -131,24 +133,14 @@ export const DocumentSigningPageViewV2 = () => {
                   .with(RecipientRole.ASSISTANT, () => <Trans>Assist Document</Trans>)
                   .otherwise(() => null)}
 
-                <div className="ml-2 flex items-center gap-1">
-                  <span className="rounded border bg-muted/50 px-2 py-0.5 text-xs text-muted-foreground">
-                    <Plural
-                      value={recipientFieldsRemaining.length}
-                      one="1 Field Remaining"
-                      other="# Fields Remaining"
-                    />
-                  </span>
-
-                  <Button
-                    variant="ghost"
-                    className="h-7 w-7 p-0"
-                    aria-label={t`Collapse sidebar`}
-                    onClick={() => setIsSidebarCollapsed(true)}
-                  >
-                    <PanelLeftCloseIcon className="h-4 w-4" />
-                  </Button>
-                </div>
+                <Button
+                  variant="ghost"
+                  className="h-7 w-7 p-0"
+                  aria-label={t`Collapse sidebar`}
+                  onClick={() => setIsSidebarCollapsed(true)}
+                >
+                  <PanelLeftCloseIcon className="h-4 w-4" />
+                </Button>
               </h3>
 
               <div className="relative my-4 h-[4px] rounded-md bg-muted">

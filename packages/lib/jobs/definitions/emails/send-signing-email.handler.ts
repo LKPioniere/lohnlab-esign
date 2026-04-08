@@ -160,6 +160,8 @@ export const run = async ({
   const assetBaseUrl = NEXT_PUBLIC_WEBAPP_URL() || 'http://localhost:3000';
   const signDocumentLink = `${NEXT_PUBLIC_WEBAPP_URL()}/sign/${recipient.token}`;
 
+  const recipientFirstName = recipient.name?.split(' ')[0] || undefined;
+
   const template = createElement(DocumentInviteEmailTemplate, {
     documentName: envelope.title,
     inviterName: user.name || undefined,
@@ -176,6 +178,7 @@ export const run = async ({
     teamName: team?.name,
     teamEmail: team?.teamEmail?.email,
     includeSenderDetails: settings.includeSenderDetails,
+    recipientName: recipientFirstName,
   });
 
   if (isRecipientEmailValidForSending(recipient)) {

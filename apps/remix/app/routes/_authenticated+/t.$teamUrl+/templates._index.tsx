@@ -146,16 +146,16 @@ export default function TemplatesPage() {
 
                 <div className="text-center">
                   <h3 className="text-lg font-semibold">
-                    <Trans>We're all empty</Trans>
+                    <Trans>No templates yet</Trans>
                   </h3>
 
                   <p className="mt-2 max-w-[50ch]">
                     {isOrgView ? (
-                      <Trans>No organisation templates are shared with your team yet.</Trans>
+                      <Trans>No organisation templates have been shared with your team yet.</Trans>
                     ) : (
                       <Trans>
-                        You have not yet created any templates. To create a template please upload
-                        one.
+                        You have not created any templates yet. Upload a document to create your
+                        first template.
                       </Trans>
                     )}
                   </p>

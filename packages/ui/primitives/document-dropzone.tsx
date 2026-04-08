@@ -10,6 +10,7 @@ import { Link } from 'react-router';
 
 import { useCurrentOrganisation } from '@documenso/lib/client-only/providers/organisation';
 import { APP_DOCUMENT_UPLOAD_SIZE_LIMIT, IS_BILLING_ENABLED } from '@documenso/lib/constants/app';
+import { DOCUMENT_UPLOAD_ACCEPT } from '@documenso/lib/constants/document-types';
 import { megabytesToBytes } from '@documenso/lib/universal/unit-convertions';
 
 import {
@@ -55,9 +56,7 @@ export const DocumentDropzone = ({
   const organisation = useCurrentOrganisation();
 
   const { getRootProps, getInputProps } = useDropzone({
-    accept: {
-      'application/pdf': ['.pdf'],
-    },
+    accept: DOCUMENT_UPLOAD_ACCEPT,
     multiple: allowMultiple,
     disabled,
     onDrop: (acceptedFiles) => {
@@ -162,7 +161,7 @@ export const DocumentDropzone = ({
           <p className="text-foreground mt-6 font-medium">{_(heading[type])}</p>
 
           <p className="text-muted-foreground/80 mt-1 text-center text-sm">
-            {_(disabled ? disabledMessage : msg`Drag & drop your PDF here.`)}
+            {_(disabled ? disabledMessage : msg`Drag & drop your document here.`)}
           </p>
 
           {disabled && IS_BILLING_ENABLED() && (

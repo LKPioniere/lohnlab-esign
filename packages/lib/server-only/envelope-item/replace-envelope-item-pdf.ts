@@ -1,5 +1,8 @@
+import { extname } from 'path';
+
 import type { Envelope, Field, Recipient } from '@prisma/client';
 
+import { isConvertibleDocument } from '@documenso/lib/constants/document-types';
 import { normalizePdf } from '@documenso/lib/server-only/pdf/normalize-pdf';
 import { DOCUMENT_AUDIT_LOG_TYPE } from '@documenso/lib/types/document-audit-logs';
 import type { ApiRequestMetadata } from '@documenso/lib/universal/extract-request-metadata';
@@ -8,6 +11,7 @@ import { createDocumentAuditLogData } from '@documenso/lib/utils/document-audit-
 import { prisma } from '@documenso/prisma';
 
 import { convertPlaceholdersToFieldInputs, extractPdfPlaceholders } from '../pdf/auto-place-fields';
+import { convertDocumentToPdf } from '../pdf/convert-document-to-pdf';
 import { findRecipientByPlaceholder } from '../pdf/helpers';
 import { insertFormValuesInPdf } from '../pdf/insert-form-values-in-pdf';
 
@@ -75,7 +79,16 @@ export const UNSAFE_replaceEnvelopeItemPdf = async ({
   user,
   apiRequestMetadata,
 }: UnsafeReplaceEnvelopeItemPdfOptions): Promise<UnsafeReplaceEnvelopeItemPdfResult> => {
-  let buffer = Buffer.from(await data.file.arrayBuffer());
+  let buffer: Buffer;
+
+  if (isConvertibleDocument(data.file.type)) {
+    const rawBuffer = Buffer.from(await data.file.arrayBuffer());
+    const extension = extname(data.file.name) || '.docx';
+
+    buffer = await convertDocumentToPdf(rawBuffer, extension);
+  } else {
+    buffer = Buffer.from(await data.file.arrayBuffer());
+  }
 
   if (envelope.formValues) {
     buffer = await insertFormValuesInPdf({ pdf: buffer, formValues: envelope.formValues });
@@ -87,9 +100,12 @@ export const UNSAFE_replaceEnvelopeItemPdf = async ({
 
   const { cleanedPdf, placeholders } = await extractPdfPlaceholders(normalized);
 
-  // Upload the new PDF and get a new DocumentData record.
+  const pdfFileName = isConvertibleDocument(data.file.type)
+    ? data.file.name.replace(/\.[^/.]+$/, '.pdf')
+    : data.file.name;
+
   const { documentData: newDocumentData, filePageCount } = await putPdfFileServerSide({
-    name: data.file.name,
+    name: pdfFileName,
     type: 'application/pdf',
     arrayBuffer: async () => Promise.resolve(cleanedPdf),
   });

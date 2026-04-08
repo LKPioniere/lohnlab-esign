@@ -1,10 +1,14 @@
+import { extname } from 'path';
+
 import { sValidator } from '@hono/standard-validator';
 import type { Prisma } from '@prisma/client';
 import { Hono } from 'hono';
 
 import { getOptionalSession } from '@documenso/auth/server/lib/utils/get-session';
 import { APP_DOCUMENT_UPLOAD_SIZE_LIMIT } from '@documenso/lib/constants/app';
+import { isAllowedDocumentType, isConvertibleDocument } from '@documenso/lib/constants/document-types';
 import { AppError, AppErrorCode } from '@documenso/lib/errors/app-error';
+import { convertDocumentToPdf } from '@documenso/lib/server-only/pdf/convert-document-to-pdf';
 import { verifyEmbeddingPresignToken } from '@documenso/lib/server-only/embedding-presign/verify-embedding-presign-token';
 import { putNormalizedPdfFileServerSide } from '@documenso/lib/universal/upload/put-file.server';
 import { getPresignPostUrl } from '@documenso/lib/universal/upload/server-actions';
@@ -38,16 +42,32 @@ export const filesRoute = new Hono<HonoEnv>()
         return c.json({ error: 'No file provided' }, 400);
       }
 
-      // Todo: (RR7) This is new.
-      // Add file size validation.
-      // Convert MB to bytes (1 MB = 1024 * 1024 bytes)
       const MAX_FILE_SIZE = APP_DOCUMENT_UPLOAD_SIZE_LIMIT * 1024 * 1024;
 
       if (file.size > MAX_FILE_SIZE) {
         return c.json({ error: 'File too large' }, 400);
       }
 
-      const result = await putNormalizedPdfFileServerSide(file);
+      if (!isAllowedDocumentType(file.type)) {
+        return c.json({ error: 'Unsupported file type' }, 400);
+      }
+
+      let fileToUpload: File | { name: string; type: string; arrayBuffer: () => Promise<ArrayBuffer> } = file;
+
+      if (isConvertibleDocument(file.type)) {
+        const rawBuffer = Buffer.from(await file.arrayBuffer());
+        const extension = extname(file.name) || '.docx';
+        const pdfBuffer = await convertDocumentToPdf(rawBuffer, extension);
+        const pdfName = file.name.replace(/\.[^/.]+$/, '.pdf');
+
+        fileToUpload = {
+          name: pdfName,
+          type: 'application/pdf',
+          arrayBuffer: async () => Promise.resolve(pdfBuffer),
+        };
+      }
+
+      const result = await putNormalizedPdfFileServerSide(fileToUpload);
 
       return c.json(result);
     } catch (error) {

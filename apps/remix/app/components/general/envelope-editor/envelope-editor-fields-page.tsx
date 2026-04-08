@@ -1,11 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-import type { MessageDescriptor } from '@lingui/core';
 import { msg } from '@lingui/core/macro';
 import { useLingui } from '@lingui/react';
 import { Trans } from '@lingui/react/macro';
 import { DocumentStatus, FieldType, RecipientRole } from '@prisma/client';
-import { FileTextIcon, PencilIcon, SparklesIcon } from 'lucide-react';
+import { FileTextIcon, PencilIcon, SparklesIcon, TrashIcon } from 'lucide-react';
 import { useRevalidator, useSearchParams } from 'react-router';
 import { isDeepEqual } from 'remeda';
 import { match } from 'ts-pattern';
@@ -29,12 +28,18 @@ import {
   type TTextFieldMeta,
 } from '@documenso/lib/types/field-meta';
 import { getEnvelopeItemPermissions } from '@documenso/lib/utils/envelope';
-import { canRecipientFieldsBeModified } from '@documenso/lib/utils/recipients';
 import { AnimateGenericFadeInOut } from '@documenso/ui/components/animate/animate-generic-fade-in-out';
 import { cn } from '@documenso/ui/lib/utils';
 import { Alert, AlertDescription, AlertTitle } from '@documenso/ui/primitives/alert';
 import { Button } from '@documenso/ui/primitives/button';
-import { Separator } from '@documenso/ui/primitives/separator';
+import { Card, CardContent, CardHeader, CardTitle } from '@documenso/ui/primitives/card';
+import { Checkbox } from '@documenso/ui/primitives/checkbox';
+import { FRIENDLY_FIELD_TYPE } from '@documenso/ui/primitives/document-flow/types';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@documenso/ui/primitives/tooltip';
 
 import { AiFeaturesEnableDialog } from '~/components/dialogs/ai-features-enable-dialog';
 import { AiFieldDetectionDialog } from '~/components/dialogs/ai-field-detection-dialog';
@@ -56,20 +61,6 @@ import { EnvelopeEditorFieldDragDrop } from './envelope-editor-fields-drag-drop'
 import { EnvelopeEditorFieldsPageRenderer } from './envelope-editor-fields-page-renderer';
 import { EnvelopeRendererFileSelector } from './envelope-file-selector';
 import { EnvelopeRecipientSelector } from './envelope-recipient-selector';
-
-const FieldSettingsTypeTranslations: Record<FieldType, MessageDescriptor> = {
-  [FieldType.SIGNATURE]: msg`Signature Settings`,
-  [FieldType.FREE_SIGNATURE]: msg`Free Signature Settings`,
-  [FieldType.TEXT]: msg`Text Settings`,
-  [FieldType.DATE]: msg`Date Settings`,
-  [FieldType.EMAIL]: msg`Email Settings`,
-  [FieldType.NAME]: msg`Name Settings`,
-  [FieldType.INITIALS]: msg`Initials Settings`,
-  [FieldType.NUMBER]: msg`Number Settings`,
-  [FieldType.RADIO]: msg`Radio Settings`,
-  [FieldType.CHECKBOX]: msg`Checkbox Settings`,
-  [FieldType.DROPDOWN]: msg`Dropdown Settings`,
-};
 
 export const EnvelopeEditorFieldsPage = () => {
   const [searchParams] = useSearchParams();
@@ -244,38 +235,6 @@ export const EnvelopeEditorFieldsPage = () => {
       {/* Right Section - Form Fields Panel */}
       {currentEnvelopeItem && envelope.recipients.length > 0 && (
         <div className="sticky top-0 h-full w-80 flex-shrink-0 overflow-y-auto border-l border-border bg-background py-4">
-          {/* Recipient selector section. */}
-          <section className="px-4">
-            <h3 className="mb-2 text-sm font-semibold text-foreground">
-              <Trans>Selected Recipient</Trans>
-            </h3>
-
-            <EnvelopeRecipientSelector
-              selectedRecipient={editorFields.selectedRecipient}
-              onSelectedRecipientChange={(recipient) =>
-                editorFields.setSelectedRecipient(recipient.id)
-              }
-              recipients={envelope.recipients}
-              fields={envelope.fields}
-              className="w-full"
-              align="end"
-            />
-
-            {editorFields.selectedRecipient &&
-              !canRecipientFieldsBeModified(editorFields.selectedRecipient, envelope.fields) && (
-                <Alert className="mt-4" variant="warning">
-                  <AlertDescription>
-                    <Trans>
-                      This recipient can no longer be modified as they have signed a field, or
-                      completed the document.
-                    </Trans>
-                  </AlertDescription>
-                </Alert>
-              )}
-          </section>
-
-          <Separator className="my-4" />
-
           {/* Add fields section. */}
           <section className="px-4">
             <h3 className="mb-2 text-sm font-semibold text-foreground">
@@ -289,22 +248,42 @@ export const EnvelopeEditorFieldsPage = () => {
 
             {editorConfig.fields?.allowAIDetection && (
               <>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="mt-4 w-full"
-                  onClick={onDetectClick}
-                  disabled={envelope.status !== DocumentStatus.DRAFT}
-                  title={
-                    envelope.status !== DocumentStatus.DRAFT
-                      ? _(msg`You can only detect fields in draft envelopes`)
-                      : undefined
-                  }
-                >
-                  <SparklesIcon className="-ml-1 mr-2 h-4 w-4" />
-                  <Trans>Detect with AI</Trans>
-                </Button>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span className="mt-4 block w-full">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="w-full"
+                        onClick={onDetectClick}
+                        disabled={
+                          envelope.status !== DocumentStatus.DRAFT ||
+                          !team.preferences.aiFeaturesEnabled
+                        }
+                      >
+                        <SparklesIcon className="-ml-1 mr-2 h-4 w-4" />
+                        <Trans>Detect with AI</Trans>
+                      </Button>
+                    </span>
+                  </TooltipTrigger>
+
+                  {!team.preferences.aiFeaturesEnabled && (
+                    <TooltipContent>
+                      <Trans>
+                        No AI API key configured. Please add a key in the team settings to use this
+                        feature.
+                      </Trans>
+                    </TooltipContent>
+                  )}
+
+                  {team.preferences.aiFeaturesEnabled &&
+                    envelope.status !== DocumentStatus.DRAFT && (
+                      <TooltipContent>
+                        <Trans>You can only detect fields in draft envelopes</Trans>
+                      </TooltipContent>
+                    )}
+                </Tooltip>
 
                 <AiFieldDetectionDialog
                   open={isAiFieldDialogOpen}
@@ -326,16 +305,76 @@ export const EnvelopeEditorFieldsPage = () => {
           {/* Field details section. */}
           <AnimateGenericFadeInOut key={editorFields.selectedField?.formId}>
             {selectedField && (
-              <section>
-                <Separator className="my-4" />
+              <section className="px-4 pt-4">
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm">
+                      {_(FRIENDLY_FIELD_TYPE[selectedField.type])}{' '}
+                      {(() => {
+                        const sameTypeFields = editorFields.localFields.filter(
+                          (f) => f.type === selectedField.type,
+                        );
+                        const index = sameTypeFields.findIndex(
+                          (f) => f.formId === selectedField.formId,
+                        );
+                        return index + 1;
+                      })()}
+                    </CardTitle>
+                  </CardHeader>
 
-                {searchParams.get('devmode') && (
-                  <>
-                    <div className="px-4">
-                      <h3 className="mb-3 text-sm font-semibold text-foreground">
-                        <Trans>Developer Mode</Trans>
-                      </h3>
+                  <CardContent className="space-y-4 [&_label]:text-xs [&_label]:text-foreground/70">
+                    {/* Recipient assignment for the selected field */}
+                    {envelope.recipients.length > 1 && (
+                      <div>
+                        <label className="mb-1.5 block text-xs font-medium text-foreground/70">
+                          <Trans>Recipient</Trans>
+                        </label>
 
+                        <EnvelopeRecipientSelector
+                          selectedRecipient={
+                            envelope.recipients.find(
+                              (r) => r.id === selectedField.recipientId,
+                            ) ?? null
+                          }
+                          onSelectedRecipientChange={(recipient) => {
+                            editorFields.updateFieldByFormId(selectedField.formId, {
+                              recipientId: recipient.id,
+                            });
+                            editorFields.setSelectedRecipient(recipient.id);
+                          }}
+                          recipients={envelope.recipients}
+                          fields={envelope.fields}
+                          className="w-full"
+                          align="end"
+                        />
+                      </div>
+                    )}
+
+                    {/* Required field toggle */}
+                    {selectedField.fieldMeta && (
+                      <div className="flex items-center">
+                        <Checkbox
+                          id="sidebar-field-required"
+                          checked={
+                            (selectedField.fieldMeta as { required?: boolean }).required !== false
+                          }
+                          onCheckedChange={(checked) => {
+                            updateSelectedFieldMeta({
+                              ...selectedField.fieldMeta!,
+                              required: !!checked,
+                            } as TFieldMetaSchema);
+                          }}
+                        />
+                        <label
+                          className="ml-2 text-sm text-muted-foreground"
+                          htmlFor="sidebar-field-required"
+                        >
+                          <Trans>Required Field</Trans>
+                        </label>
+                      </div>
+                    )}
+
+                    {searchParams.get('devmode') && (
                       <div className="space-y-2 rounded-md border border-border bg-muted/50 p-3 text-sm text-foreground">
                         {selectedField.id && (
                           <p>
@@ -376,80 +415,87 @@ export const EnvelopeEditorFieldsPage = () => {
                           {selectedField.height.toFixed(2)}
                         </p>
                       </div>
-                    </div>
+                    )}
 
-                    <Separator className="my-4" />
-                  </>
-                )}
+                    {/* Field type specific settings */}
+                    {match(selectedField.type)
+                      .with(FieldType.SIGNATURE, () => (
+                        <EditorFieldSignatureForm
+                          value={selectedField?.fieldMeta as TSignatureFieldMeta | undefined}
+                          onValueChange={(value) => updateSelectedFieldMeta(value)}
+                        />
+                      ))
+                      .with(FieldType.CHECKBOX, () => (
+                        <EditorFieldCheckboxForm
+                          value={selectedField?.fieldMeta as TCheckboxFieldMeta | undefined}
+                          onValueChange={(value) => updateSelectedFieldMeta(value)}
+                        />
+                      ))
+                      .with(FieldType.DATE, () => (
+                        <EditorFieldDateForm
+                          value={selectedField?.fieldMeta as TDateFieldMeta | undefined}
+                          onValueChange={(value) => updateSelectedFieldMeta(value)}
+                        />
+                      ))
+                      .with(FieldType.DROPDOWN, () => (
+                        <EditorFieldDropdownForm
+                          value={selectedField?.fieldMeta as TDropdownFieldMeta | undefined}
+                          onValueChange={(value) => updateSelectedFieldMeta(value)}
+                        />
+                      ))
+                      .with(FieldType.EMAIL, () => (
+                        <EditorFieldEmailForm
+                          value={selectedField?.fieldMeta as TEmailFieldMeta | undefined}
+                          onValueChange={(value) => updateSelectedFieldMeta(value)}
+                        />
+                      ))
+                      .with(FieldType.INITIALS, () => (
+                        <EditorFieldInitialsForm
+                          value={selectedField?.fieldMeta as TInitialsFieldMeta | undefined}
+                          onValueChange={(value) => updateSelectedFieldMeta(value)}
+                        />
+                      ))
+                      .with(FieldType.NAME, () => (
+                        <EditorFieldNameForm
+                          value={selectedField?.fieldMeta as TNameFieldMeta | undefined}
+                          onValueChange={(value) => updateSelectedFieldMeta(value)}
+                        />
+                      ))
+                      .with(FieldType.NUMBER, () => (
+                        <EditorFieldNumberForm
+                          value={selectedField?.fieldMeta as TNumberFieldMeta | undefined}
+                          onValueChange={(value) => updateSelectedFieldMeta(value)}
+                        />
+                      ))
+                      .with(FieldType.RADIO, () => (
+                        <EditorFieldRadioForm
+                          value={selectedField?.fieldMeta as TRadioFieldMeta | undefined}
+                          onValueChange={(value) => updateSelectedFieldMeta(value)}
+                        />
+                      ))
+                      .with(FieldType.TEXT, () => (
+                        <EditorFieldTextForm
+                          value={selectedField?.fieldMeta as TTextFieldMeta | undefined}
+                          onValueChange={(value) => updateSelectedFieldMeta(value)}
+                        />
+                      ))
+                      .otherwise(() => null)}
 
-                <div className="px-4 [&_label]:text-xs [&_label]:text-foreground/70">
-                  <h3 className="text-sm font-semibold">
-                    {_(FieldSettingsTypeTranslations[selectedField.type])}
-                  </h3>
-
-                  {match(selectedField.type)
-                    .with(FieldType.SIGNATURE, () => (
-                      <EditorFieldSignatureForm
-                        value={selectedField?.fieldMeta as TSignatureFieldMeta | undefined}
-                        onValueChange={(value) => updateSelectedFieldMeta(value)}
-                      />
-                    ))
-                    .with(FieldType.CHECKBOX, () => (
-                      <EditorFieldCheckboxForm
-                        value={selectedField?.fieldMeta as TCheckboxFieldMeta | undefined}
-                        onValueChange={(value) => updateSelectedFieldMeta(value)}
-                      />
-                    ))
-                    .with(FieldType.DATE, () => (
-                      <EditorFieldDateForm
-                        value={selectedField?.fieldMeta as TDateFieldMeta | undefined}
-                        onValueChange={(value) => updateSelectedFieldMeta(value)}
-                      />
-                    ))
-                    .with(FieldType.DROPDOWN, () => (
-                      <EditorFieldDropdownForm
-                        value={selectedField?.fieldMeta as TDropdownFieldMeta | undefined}
-                        onValueChange={(value) => updateSelectedFieldMeta(value)}
-                      />
-                    ))
-                    .with(FieldType.EMAIL, () => (
-                      <EditorFieldEmailForm
-                        value={selectedField?.fieldMeta as TEmailFieldMeta | undefined}
-                        onValueChange={(value) => updateSelectedFieldMeta(value)}
-                      />
-                    ))
-                    .with(FieldType.INITIALS, () => (
-                      <EditorFieldInitialsForm
-                        value={selectedField?.fieldMeta as TInitialsFieldMeta | undefined}
-                        onValueChange={(value) => updateSelectedFieldMeta(value)}
-                      />
-                    ))
-                    .with(FieldType.NAME, () => (
-                      <EditorFieldNameForm
-                        value={selectedField?.fieldMeta as TNameFieldMeta | undefined}
-                        onValueChange={(value) => updateSelectedFieldMeta(value)}
-                      />
-                    ))
-                    .with(FieldType.NUMBER, () => (
-                      <EditorFieldNumberForm
-                        value={selectedField?.fieldMeta as TNumberFieldMeta | undefined}
-                        onValueChange={(value) => updateSelectedFieldMeta(value)}
-                      />
-                    ))
-                    .with(FieldType.RADIO, () => (
-                      <EditorFieldRadioForm
-                        value={selectedField?.fieldMeta as TRadioFieldMeta | undefined}
-                        onValueChange={(value) => updateSelectedFieldMeta(value)}
-                      />
-                    ))
-                    .with(FieldType.TEXT, () => (
-                      <EditorFieldTextForm
-                        value={selectedField?.fieldMeta as TTextFieldMeta | undefined}
-                        onValueChange={(value) => updateSelectedFieldMeta(value)}
-                      />
-                    ))
-                    .otherwise(() => null)}
-                </div>
+                    {/* Delete button */}
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      className="w-full"
+                      onClick={() => {
+                        editorFields.removeFieldsByFormId([selectedField.formId]);
+                      }}
+                    >
+                      <TrashIcon className="mr-1.5 h-3.5 w-3.5" />
+                      <Trans>Delete</Trans>
+                    </Button>
+                  </CardContent>
+                </Card>
               </section>
             )}
           </AnimateGenericFadeInOut>

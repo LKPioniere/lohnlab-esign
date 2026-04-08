@@ -5,7 +5,6 @@ import { useForm, useWatch } from 'react-hook-form';
 import type { z } from 'zod';
 
 import {
-  DEFAULT_FIELD_FONT_SIZE,
   FIELD_DEFAULT_GENERIC_ALIGN,
   type TNameFieldMeta as NameFieldMeta,
   ZNameFieldMeta,
@@ -39,7 +38,7 @@ export const EditorFieldNameForm = ({
     resolver: zodResolver(ZNameFieldFormSchema),
     mode: 'onChange',
     defaultValues: {
-      fontSize: value.fontSize || DEFAULT_FIELD_FONT_SIZE,
+      fontSize: value.fontSize,
       textAlign: value.textAlign ?? FIELD_DEFAULT_GENERIC_ALIGN,
     },
   });

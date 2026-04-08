@@ -22,4 +22,4 @@ export const APP_I18N_OPTIONS = {
   defaultLocale: 'en-US',
 } as const;
 
-export const ZSupportedLanguageCodeSchema = z.enum(SUPPORTED_LANGUAGE_CODES).catch('en');
+export const ZSupportedLanguageCodeSchema = z.enum(SUPPORTED_LANGUAGE_CODES).catch('de');

@@ -10,7 +10,6 @@ import { z } from 'zod';
 import { validateCheckboxLength } from '@documenso/lib/advanced-fields-validation/validate-checkbox';
 import {
   type TCheckboxFieldMeta as CheckboxFieldMeta,
-  DEFAULT_FIELD_FONT_SIZE,
   ZCheckboxFieldMeta,
 } from '@documenso/lib/types/field-meta';
 import { Alert, AlertDescription } from '@documenso/ui/primitives/alert';
@@ -99,7 +98,7 @@ export const EditorFieldCheckboxForm = ({
       values: value.values || [{ id: 1, checked: false, value: '' }],
       required: value.required || false,
       readOnly: value.readOnly || false,
-      fontSize: value.fontSize || DEFAULT_FIELD_FONT_SIZE,
+      fontSize: value.fontSize,
     },
   });
 

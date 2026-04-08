@@ -11,6 +11,7 @@ import { Link } from 'react-router';
 import { useCurrentOrganisation } from '@documenso/lib/client-only/providers/organisation';
 import { useSession } from '@documenso/lib/client-only/providers/session';
 import { APP_DOCUMENT_UPLOAD_SIZE_LIMIT, IS_BILLING_ENABLED } from '@documenso/lib/constants/app';
+import { DOCUMENT_UPLOAD_ACCEPT } from '@documenso/lib/constants/document-types';
 import { megabytesToBytes } from '@documenso/lib/universal/unit-convertions';
 import { isPersonalLayout } from '@documenso/lib/utils/organisations';
 
@@ -52,9 +53,7 @@ export const DocumentUploadButton = ({
   const isPersonalLayoutMode = isPersonalLayout(organisations);
 
   const { getRootProps, getInputProps } = useDropzone({
-    accept: {
-      'application/pdf': ['.pdf'],
-    },
+    accept: DOCUMENT_UPLOAD_ACCEPT,
     multiple: internalVersion === '2',
     disabled,
     maxFiles,

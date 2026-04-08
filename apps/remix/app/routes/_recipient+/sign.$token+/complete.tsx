@@ -1,4 +1,3 @@
-import { useLingui } from '@lingui/react';
 import { Trans } from '@lingui/react/macro';
 import { DocumentStatus, FieldType, RecipientRole } from '@prisma/client';
 import { CheckCircle2, Clock8, DownloadIcon, Loader2 } from 'lucide-react';
@@ -102,8 +101,6 @@ export async function loader({ params, request }: Route.LoaderArgs) {
 }
 
 export default function CompletedSigningPage({ loaderData }: Route.ComponentProps) {
-  const { _ } = useLingui();
-
   const { sessionData } = useOptionalSession();
   const user = sessionData?.user;
 
@@ -117,6 +114,8 @@ export default function CompletedSigningPage({ loaderData }: Route.ComponentProp
     recipientEmail,
     returnToHomePath,
   } = loaderData;
+
+  const showClaimAccountCta = canSignUp && !user;
 
   // Poll signing status every few seconds
   const { data: signingStatusData } = trpc.envelope.signingStatus.useQuery(
@@ -144,18 +143,18 @@ export default function CompletedSigningPage({ loaderData }: Route.ComponentProp
     <div
       className={cn(
         '-mx-4 flex flex-col items-center overflow-hidden px-4 pt-16 md:-mx-8 md:px-8 lg:pt-20 xl:pt-28',
-        { 'pt-0 lg:pt-0 xl:pt-0': canSignUp },
+        { 'pt-0 lg:pt-0 xl:pt-0': showClaimAccountCta },
       )}
     >
       <div
         className={cn('relative mt-6 flex w-full flex-col items-center justify-center', {
           'mt-0 flex-col divide-y overflow-hidden pt-6 md:pt-16 lg:flex-row lg:divide-x lg:divide-y-0 lg:pt-20 xl:pt-24':
-            canSignUp,
+            showClaimAccountCta,
         })}
       >
         <div
           className={cn('flex flex-col items-center', {
-            'mb-8 p-4 md:mb-0 md:p-12': canSignUp,
+            'mb-8 p-4 md:mb-0 md:p-12': showClaimAccountCta,
           })}
         >
           <Badge variant="neutral" size="default" className="mb-6 rounded-xl border bg-transparent">
@@ -276,7 +275,7 @@ export default function CompletedSigningPage({ loaderData }: Route.ComponentProp
         </div>
 
         <div className="flex flex-col items-center">
-          {canSignUp && (
+          {showClaimAccountCta && (
             <div className="flex max-w-xl flex-col items-center justify-center p-4 md:p-12">
               <h2 className="mt-8 text-center text-xl font-semibold md:mt-0">
                 <Trans>Need to sign documents?</Trans>

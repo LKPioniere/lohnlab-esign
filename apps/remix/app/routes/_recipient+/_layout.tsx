@@ -8,6 +8,7 @@ import { Button } from '@documenso/ui/primitives/button';
 
 import { Header as AuthenticatedHeader } from '~/components/general/app-header';
 import { GenericErrorLayout } from '~/components/general/generic-error-layout';
+import { SourceCodeLink } from '~/components/general/source-code-link';
 
 import type { Route } from './+types/_layout';
 
@@ -38,6 +39,10 @@ export default function RecipientLayout({ matches }: Route.ComponentProps) {
       >
         <Outlet />
       </main>
+
+      <footer className="flex justify-center pb-4">
+        <SourceCodeLink />
+      </footer>
     </div>
   );
 }

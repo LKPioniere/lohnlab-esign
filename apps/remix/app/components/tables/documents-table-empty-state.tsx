@@ -16,25 +16,36 @@ export const DocumentsTableEmptyState = ({ status }: DocumentsTableEmptyStatePro
     icon: Icon,
   } = match(status)
     .with(ExtendedDocumentStatus.COMPLETED, () => ({
-      title: msg`Nothing to do`,
-      message: msg`There are no completed documents yet. Documents that you have created or received will appear here once completed.`,
+      title: msg`No completed documents`,
+      message: msg`Documents you created or that were sent to you will appear here once they are fully signed.`,
       icon: CheckCircle2,
     }))
     .with(ExtendedDocumentStatus.DRAFT, () => ({
-      title: msg`No active drafts`,
-      message: msg`There are no active drafts at the current moment. You can upload a document to start drafting.`,
+      title: msg`No drafts`,
+      message: msg`Upload a document to create your first draft.`,
       icon: CheckCircle2,
     }))
     .with(ExtendedDocumentStatus.ALL, () => ({
-      title: msg`We're all empty`,
-      message: msg`You have not yet created or received any documents. To create a document please upload one.`,
+      title: msg`No documents yet`,
+      message: msg`You have not created or received any documents yet. Upload a document to get started.`,
       icon: Bird,
     }))
-    .otherwise(() => ({
-      title: msg`Nothing to do`,
-      message: msg`All documents have been processed. Any new documents that are sent or received will show here.`,
+    .with(ExtendedDocumentStatus.PENDING, () => ({
+      title: msg`Nothing pending`,
+      message: msg`No documents are waiting for signatures right now. Newly sent documents will show up here.`,
       icon: CheckCircle2,
-    }));
+    }))
+    .with(ExtendedDocumentStatus.REJECTED, () => ({
+      title: msg`No rejected documents`,
+      message: msg`Documents that a recipient declined will appear here.`,
+      icon: CheckCircle2,
+    }))
+    .with(ExtendedDocumentStatus.INBOX, () => ({
+      title: msg`Inbox is empty`,
+      message: msg`Documents that require your attention will appear here.`,
+      icon: CheckCircle2,
+    }))
+    .exhaustive();
 
   return (
     <div

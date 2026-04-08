@@ -115,7 +115,7 @@ export const generateDefaultOrganisationSettings = (): Omit<
 > => {
   return {
     documentVisibility: DocumentVisibility.EVERYONE,
-    documentLanguage: 'en',
+    documentLanguage: 'de',
     documentTimezone: null, // Null means local timezone.
     documentDateFormat: DEFAULT_DOCUMENT_DATE_FORMAT,
     delegateDocumentOwnership: false,

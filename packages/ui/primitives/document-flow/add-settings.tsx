@@ -118,7 +118,7 @@ export const AddSettingsFormPartial = ({
           DATE_FORMATS.find((format) => format.value === document.documentMeta?.dateFormat)
             ?.value ?? DEFAULT_DOCUMENT_DATE_FORMAT,
         redirectUrl: document.documentMeta?.redirectUrl ?? '',
-        language: document.documentMeta?.language ?? 'en',
+        language: document.documentMeta?.language ?? 'de',
         signatureTypes: extractTeamSignatureSettings(document.documentMeta),
       },
     },

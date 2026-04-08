@@ -1,44 +1,50 @@
+# LohnLab eSign
+
+> **Fork-Hinweis:** Dieses Projekt ist ein modifizierter Fork von [Documenso](https://github.com/documenso/documenso), der Open-Source-Plattform fuer digitale Dokumentensignierung. Das Original-Projekt wird von [Documenso Inc.](https://documenso.com) entwickelt und gepflegt. Alle Aenderungen in diesem Fork sind als solche gekennzeichnet. Dieses Werk steht, wie das Original, unter der [GNU Affero General Public License v3.0 (AGPL-3.0)](./LICENSE).
+
+---
+
 <img src="https://github.com/documenso/documenso/assets/13398220/a643571f-0239-46a6-a73e-6bef38d1228b" alt="Documenso Logo">
 
 <p align="center" style="margin-top: 20px">
   <p align="center">
   The Open Source DocuSign Alternative.
   <br>
-    <a href="https://documenso.com"><strong>Learn more »</strong></a>
+    <a href="https://documenso.com"><strong>Learn more about Documenso »</strong></a>
     <br />
     <br />
     <a href="https://documen.so/discord">Discord</a>
     ·
     <a href="https://documenso.com">Website</a>
     ·
-    <a href="https://github.com/documenso/documenso/issues">Issues</a>
+    <a href="https://github.com/documenso/documenso/issues">Upstream Issues</a>
     ·
-    <a href="https://documen.so/live">Upcoming Releases</a>
-    ·
-    <a href="https://documen.so/roadmap">Roadmap</a>
+    <a href="https://documen.so/roadmap">Upstream Roadmap</a>
   </p>
 </p>
 
 <p align="center">
-   <a href="https://documen.so/discord"><img src="https://img.shields.io/badge/Discord-documen.so/discord-%235865F2" alt="Join Documenso on Discord"></a>
-   <a href="https://github.com/documenso/documenso/stargazers"><img src="https://img.shields.io/github/stars/documenso/documenso" alt="Github Stars"></a>
    <a href="https://github.com/documenso/documenso/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-AGPLv3-purple" alt="License"></a>
-   <a href="https://github.com/documenso/documenso/pulse"><img src="https://img.shields.io/github/commit-activity/m/documenso/documenso" alt="Commits-per-month"></a>
-   <a href="https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/documenso/documenso">
-   <img alt="open in devcontainer" src="https://img.shields.io/static/v1?label=Dev%20Containers&message=Enabled&color=blue&logo=visualstudiocode" />
-   </a>
-   <a href="CODE_OF_CONDUCT.md"><img src="https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg" alt="Contributor Covenant"></a>
+   <a href="https://github.com/documenso/documenso"><img src="https://img.shields.io/badge/upstream-documenso%2Fdocumenso-blue" alt="Upstream Repo"></a>
 </p>
 
-<div align="center">
-  <img src="https://github.com/documenso/documenso/assets/13398220/d96ed533-6f34-4a97-be9b-442bdb189c69" style="width: 80%;" />
-</div>
+## About
 
-## About Documenso
+This is **LohnLab eSign**, a modified version of [Documenso](https://github.com/documenso/documenso) by [Documenso Inc.](https://documenso.com), adapted for internal use by LohnLab / LK Pioniere.
+
+### About Documenso (Upstream)
 
 Signing documents digitally should be fast and easy and should be the best practice for every document signed worldwide. This is technically quite easy today, but it also introduces a new party to every signature: The signing tool providers. While this is not a problem in itself, it should make us think about how we want these providers of trust to work. Documenso aims to be the world's most trusted document-signing tool. This trust is built by empowering you to self-host Documenso and review how it works under the hood.
 
 Join us in creating the next generation of open trust infrastructure.
+
+### Modifications in this Fork
+
+This fork contains the following modifications compared to the upstream Documenso project:
+
+- Rebranding to "LohnLab eSign"
+- Support for uploading DOC, DOCX, ODT and RTF files (automatic server-side PDF conversion via LibreOffice)
+- Additional customizations for internal use
 
 ## Recognition
 

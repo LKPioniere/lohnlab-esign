@@ -389,9 +389,15 @@ export const insertFieldInPDFV1 = async (pdf: PDFDocument, field: FieldWithSigna
       const textWidth = font.widthOfTextAtSize(field.customText, fontSize);
       const textHeight = font.heightAtSize(fontSize);
 
-      // Scale font only if no custom font and height exceeds field height.
+      // Scale font only if no custom font size is set (automatic mode).
       if (!customFontSize) {
-        const scalingFactor = Math.min(fieldHeight / textHeight, 1);
+        const padding = 8;
+        const availableWidth = fieldWidth - padding * 2;
+        const scalingFactor = Math.min(
+          fieldHeight / textHeight,
+          availableWidth / Math.max(textWidth, 1),
+          1,
+        );
         fontSize = Math.max(Math.min(fontSize * scalingFactor, maxFontSize), minFontSize);
       }
 

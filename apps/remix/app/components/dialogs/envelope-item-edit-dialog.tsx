@@ -10,6 +10,7 @@ import { z } from 'zod';
 
 import { useCurrentEnvelopeEditor } from '@documenso/lib/client-only/providers/envelope-editor-provider';
 import { APP_DOCUMENT_UPLOAD_SIZE_LIMIT } from '@documenso/lib/constants/app';
+import { DOCUMENT_UPLOAD_ACCEPT } from '@documenso/lib/constants/document-types';
 import { megabytesToBytes } from '@documenso/lib/universal/unit-convertions';
 import { trpc } from '@documenso/trpc/react';
 import { ZDocumentTitleSchema } from '@documenso/trpc/server/document-router/schema';
@@ -122,21 +123,28 @@ export const EnvelopeItemEditDialog = ({
     setIsDropping(true);
 
     try {
-      const arrayBuffer = await file.arrayBuffer();
-      const fileData = new Uint8Array(arrayBuffer.slice(0));
-      const { PDF } = await import('@libpdf/core');
-      const pdfDoc = await PDF.load(fileData);
+      if (file.type === 'application/pdf') {
+        const arrayBuffer = await file.arrayBuffer();
+        const fileData = new Uint8Array(arrayBuffer.slice(0));
+        const { PDF } = await import('@libpdf/core');
+        const pdfDoc = await PDF.load(fileData);
 
-      setReplacementFile({
-        file,
-        pageCount: pdfDoc.getPageCount(),
-      });
+        setReplacementFile({
+          file,
+          pageCount: pdfDoc.getPageCount(),
+        });
+      } else {
+        setReplacementFile({
+          file,
+          pageCount: Number.MAX_SAFE_INTEGER,
+        });
+      }
     } catch (err) {
       console.error(err);
 
       toast({
         title: t`Failed to read file`,
-        description: t`The file is not a valid PDF.`,
+        description: t`The file is not a valid document.`,
         variant: 'destructive',
       });
     }
@@ -145,7 +153,7 @@ export const EnvelopeItemEditDialog = ({
   };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    accept: { 'application/pdf': ['.pdf'] },
+    accept: DOCUMENT_UPLOAD_ACCEPT,
     maxFiles: 1,
     maxSize: megabytesToBytes(APP_DOCUMENT_UPLOAD_SIZE_LIMIT),
     disabled: form.formState.isSubmitting,

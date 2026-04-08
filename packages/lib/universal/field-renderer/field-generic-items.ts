@@ -130,6 +130,44 @@ export const createSpinner = ({
   return loadingGroup;
 };
 
+/**
+ * Creates a required field indicator (*) in the top-right corner of the field.
+ */
+export const createRequiredIndicator = (
+  field: FieldToRender,
+  options: RenderFieldElementOptions,
+): Konva.Text | null => {
+  const { pageWidth, pageHeight, mode } = options;
+
+  if (mode === 'export') {
+    return null;
+  }
+
+  const isRequired = field.fieldMeta?.required !== false;
+
+  if (!isRequired || field.inserted) {
+    return null;
+  }
+
+  const { fieldWidth } = calculateFieldPosition(field, pageWidth, pageHeight);
+
+  const indicator = new Konva.Text({
+    id: `${field.renderId}-required`,
+    name: 'field-required-indicator',
+    text: '*',
+    fontSize: 14,
+    fontStyle: 'bold',
+    fill: '#f97316',
+    x: fieldWidth - 12,
+    y: 1,
+    width: 12,
+    align: 'center',
+    listening: false,
+  });
+
+  return indicator;
+};
+
 type CreateFieldHoverInteractionOptions = {
   options: RenderFieldElementOptions;
   fieldGroup: Konva.Group;

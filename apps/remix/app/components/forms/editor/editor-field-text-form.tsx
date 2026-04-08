@@ -6,7 +6,6 @@ import { useForm, useWatch } from 'react-hook-form';
 import type { z } from 'zod';
 
 import {
-  DEFAULT_FIELD_FONT_SIZE,
   FIELD_DEFAULT_GENERIC_ALIGN,
   FIELD_DEFAULT_GENERIC_VERTICAL_ALIGN,
   FIELD_DEFAULT_LETTER_SPACING,
@@ -81,7 +80,7 @@ export const EditorFieldTextForm = ({
       placeholder: value.placeholder || '',
       text: value.text || '',
       characterLimit: value.characterLimit || 0,
-      fontSize: value.fontSize || DEFAULT_FIELD_FONT_SIZE,
+      fontSize: value.fontSize,
       textAlign: value.textAlign ?? FIELD_DEFAULT_GENERIC_ALIGN,
       lineHeight: value.lineHeight ?? FIELD_DEFAULT_LINE_HEIGHT,
       letterSpacing: value.letterSpacing ?? FIELD_DEFAULT_LETTER_SPACING,

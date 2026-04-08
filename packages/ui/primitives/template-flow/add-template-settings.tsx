@@ -127,7 +127,7 @@ export const AddTemplateSettingsFormPartial = ({
         distributionMethod:
           template.templateMeta?.distributionMethod || DocumentDistributionMethod.EMAIL,
         redirectUrl: template.templateMeta?.redirectUrl ?? '',
-        language: template.templateMeta?.language ?? 'en',
+        language: template.templateMeta?.language ?? 'de',
         emailId: template.templateMeta?.emailId ?? null,
         emailReplyTo: template.templateMeta?.emailReplyTo ?? undefined,
         emailSettings: ZDocumentEmailSettingsSchema.parse(template?.templateMeta?.emailSettings),

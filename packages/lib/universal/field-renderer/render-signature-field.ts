@@ -4,6 +4,7 @@ import { DEFAULT_SIGNATURE_TEXT_FONT_SIZE } from '../../constants/pdf';
 import { AppError } from '../../errors/app-error';
 import {
   createFieldHoverInteraction,
+  createRequiredIndicator,
   upsertFieldGroup,
   upsertFieldRect,
 } from './field-generic-items';
@@ -164,6 +165,11 @@ export const renderSignatureFieldElement = (
 
   fieldGroup.add(fieldRect);
   fieldGroup.add(fieldSignature);
+
+  const requiredIndicator = createRequiredIndicator(field, options);
+  if (requiredIndicator) {
+    fieldGroup.add(requiredIndicator);
+  }
 
   // This is to keep the text inside the field at the same size
   // when the field is resized. Without this the text would be stretched.
