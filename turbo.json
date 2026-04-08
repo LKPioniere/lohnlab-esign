@@ -1,41 +1,8 @@
 {
-  "$schema": "https://turbo.build/schema.json",
-  "pipeline": {
-    "build": {
-      "dependsOn": ["prebuild", "^build"],
-      "outputs": [".next/**", "!.next/cache/**"]
-    },
-    "prebuild": {
-      "cache": false,
-      "dependsOn": ["^prebuild"]
-    },
-    "lint": {
-      "cache": false
-    },
-    "lint:fix": {
-      "cache": false
-    },
-    "clean": {
-      "cache": false
-    },
-    "dev": {
-      "cache": false,
-      "persistent": true
-    },
-    "start": {
-      "dependsOn": ["^build"],
-      "cache": false,
-      "persistent": true
-    },
-    "dev:test": {
-      "cache": false
-    },
-    "test:e2e": {
-      "dependsOn": ["^build"],
-      "cache": false
-    }
-  },
-  "globalDependencies": ["**/.env.*local"],
+  "$schema": "https://v2-9-5.turborepo.dev/schema.json",
+  "globalDependencies": [
+    "**/.env.*local"
+  ],
   "globalEnv": [
     "APP_VERSION",
     "PORT",
@@ -142,5 +109,52 @@
     "NEXT_PUBLIC_USE_INTERNAL_URL_BROWSERLESS",
     "NEXT_PRIVATE_OIDC_PROMPT",
     "NEXT_PRIVATE_WEBHOOK_SSRF_BYPASS_HOSTS"
-  ]
+  ],
+  "tasks": {
+    "build": {
+      "dependsOn": [
+        "prebuild",
+        "^build"
+      ],
+      "outputs": [
+        ".next/**",
+        "!.next/cache/**"
+      ]
+    },
+    "prebuild": {
+      "cache": false,
+      "dependsOn": [
+        "^prebuild"
+      ]
+    },
+    "lint": {
+      "cache": false
+    },
+    "lint:fix": {
+      "cache": false
+    },
+    "clean": {
+      "cache": false
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "start": {
+      "dependsOn": [
+        "^build"
+      ],
+      "cache": false,
+      "persistent": true
+    },
+    "dev:test": {
+      "cache": false
+    },
+    "test:e2e": {
+      "dependsOn": [
+        "^build"
+      ],
+      "cache": false
+    }
+  }
 }
