@@ -113,13 +113,18 @@
   "tasks": {
     "build": {
       "dependsOn": [
+        "prebuild",
         "^build"
       ],
       "outputs": [
         ".next/**",
-        "!.next/cache/**",
-        "build/**",
-        "generated/**"
+        "!.next/cache/**"
+      ]
+    },
+    "prebuild": {
+      "cache": false,
+      "dependsOn": [
+        "^prebuild"
       ]
     },
     "lint": {

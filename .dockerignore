@@ -34,33 +34,3 @@ yarn-error.log*
 
 # vercel
 .vercel
-
-# git
-.git
-.gitattributes
-
-# IDE and tooling
-.cursor
-.agents
-.codex
-.vscode
-.idea
-
-# integrations (not needed for remix build)
-integrations/
-
-# docs app (not needed for remix build)
-apps/docs/
-
-# alternative dockerfiles
-apps/remix/Dockerfile*
-
-# source images and assets not needed in build
-*.png
-!apps/remix/public/**/*.png
-!packages/assets/**/*.png
-
-# documentation
-*.md
-!packages/prisma/migrations/**/*.md
-LICENSE

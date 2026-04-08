@@ -3,7 +3,9 @@
 ###########################
 FROM node:22-alpine3.22 AS base
 
-RUN apk add --no-cache openssl font-freefont libreoffice
+RUN apk add --no-cache openssl
+RUN apk add --no-cache font-freefont
+RUN apk add --no-cache libreoffice
 
 
 ###########################
@@ -11,15 +13,14 @@ RUN apk add --no-cache openssl font-freefont libreoffice
 ###########################
 FROM base AS builder
 
-RUN apk add --no-cache libc6-compat jq
+# Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
+RUN apk add --no-cache libc6-compat
+RUN apk add --no-cache jq
 WORKDIR /app
 
-RUN npm install -g "turbo@^2.9.5"
+COPY . .
 
-COPY package.json package-lock.json turbo.json lingui.config.ts ./
-COPY patches ./patches
-COPY packages ./packages
-COPY apps ./apps
+RUN npm install -g "turbo@^2.9.5"
 
 # Outputs to the /out folder
 # source: https://turbo.build/repo/docs/reference/command-line-reference/prune#--docker
@@ -30,7 +31,11 @@ RUN turbo prune @documenso/remix --docker
 ###########################
 FROM base AS installer
 
-RUN apk add --no-cache libc6-compat jq make cmake g++ openssl bash
+# Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
+RUN apk add --no-cache libc6-compat
+RUN apk add --no-cache jq
+# Required for node_modules/aws-crt
+RUN apk add --no-cache make cmake g++ openssl bash
 
 WORKDIR /app
 
@@ -63,7 +68,7 @@ ENV NEXT_PRIVATE_TELEMETRY_HOST="$NEXT_PRIVATE_TELEMETRY_HOST"
 # First install the dependencies (as they change less often)
 COPY .gitignore .gitignore
 COPY --from=builder /app/out/json/ .
-COPY --from=builder /app/package-lock.json ./package-lock.json
+COPY --from=builder /app/out/package-lock.json ./package-lock.json
 
 COPY --from=builder /app/lingui.config.ts ./lingui.config.ts
 COPY --from=builder /app/patches ./patches
@@ -75,9 +80,7 @@ COPY --from=builder /app/out/full/ .
 # Finally copy the turbo.json file so that we can run turbo commands
 COPY turbo.json turbo.json
 
-# Reuse turbo from builder instead of installing again
-COPY --from=builder /usr/local/lib/node_modules/turbo /usr/local/lib/node_modules/turbo
-COPY --from=builder /usr/local/bin/turbo /usr/local/bin/turbo
+RUN npm install -g "turbo@^2.9.5"
 
 RUN turbo run build --filter=@documenso/remix...
 
@@ -97,21 +100,20 @@ ARG NEXT_PRIVATE_TELEMETRY_HOST=""
 ENV NEXT_PRIVATE_TELEMETRY_HOST="$NEXT_PRIVATE_TELEMETRY_HOST"
 
 # Don't run production as root
-RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 nodejs
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nodejs
 
 USER nodejs
 
 WORKDIR /app
 
 COPY --from=builder --chown=nodejs:nodejs /app/out/json/ .
-COPY --from=builder --chown=nodejs:nodejs /app/package-lock.json ./package-lock.json
 # Copy the tailwind config files across
 COPY --from=builder --chown=nodejs:nodejs /app/out/full/packages/tailwind-config ./packages/tailwind-config
 # Copy the patches across
 COPY --from=builder --chown=nodejs:nodejs /app/patches ./patches
 
-RUN npm ci --omit=dev
+RUN npm ci --only=production
 
 # Automatically leverage output traces to reduce image size
 # https://nodejs.org/docs/advanced-features/output-file-tracing
@@ -122,7 +124,7 @@ COPY --from=installer --chown=nodejs:nodejs /app/apps/remix/public ./apps/remix/
 COPY --from=installer --chown=nodejs:nodejs /app/packages/prisma/schema.prisma ./packages/prisma/schema.prisma
 COPY --from=installer --chown=nodejs:nodejs /app/packages/prisma/migrations ./packages/prisma/migrations
 
-# Generate the prisma client for the runner
+# Generate the prisma client again
 RUN npx prisma generate --schema ./packages/prisma/schema.prisma
 
 
