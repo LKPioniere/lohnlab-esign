@@ -7,6 +7,7 @@ import { enterpriseRouter } from './enterprise-router/router';
 import { envelopeRouter } from './envelope-router/router';
 import { fieldRouter } from './field-router/router';
 import { folderRouter } from './folder-router/router';
+import { hubspotRouter } from './hubspot-router/router';
 import { organisationRouter } from './organisation-router/router';
 import { profileRouter } from './profile-router/router';
 import { recipientRouter } from './recipient-router/router';
@@ -23,6 +24,7 @@ export const appRouter = router({
   document: documentRouter,
   field: fieldRouter,
   folder: folderRouter,
+  hubspot: hubspotRouter,
   recipient: recipientRouter,
   admin: adminRouter,
   organisation: organisationRouter,

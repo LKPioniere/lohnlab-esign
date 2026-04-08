@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Trans, useLingui } from '@lingui/react/macro';
@@ -12,6 +12,7 @@ import {
 import {
   type TDateFieldMeta as DateFieldMeta,
   FIELD_DEFAULT_GENERIC_ALIGN,
+  type THubspotMapping,
   ZDateFieldMeta,
 } from '@documenso/lib/types/field-meta';
 import {
@@ -34,6 +35,7 @@ import {
   EditorGenericFontSizeField,
   EditorGenericTextAlignField,
 } from './editor-field-generic-field-forms';
+import { EditorFieldHubspotMapping } from './editor-field-hubspot-mapping';
 
 const ZDateFieldFormSchema = ZDateFieldMeta.pick({
   fontSize: true,
@@ -56,6 +58,10 @@ export const EditorFieldDateForm = ({
   onValueChange,
 }: EditorFieldDateFormProps) => {
   const { t } = useLingui();
+
+  const hubspotMappingRef = useRef<THubspotMapping | undefined>(
+    value.hubspotMapping ?? undefined,
+  );
 
   const form = useForm<TDateFieldFormSchema>({
     resolver: zodResolver(ZDateFieldFormSchema),
@@ -81,9 +87,25 @@ export const EditorFieldDateForm = ({
       onValueChange({
         type: 'date',
         ...validatedFormValues.data,
+        hubspotMapping: hubspotMappingRef.current,
       });
     }
   }, [formValues]);
+
+  const handleHubspotMappingChange = (mapping: THubspotMapping | undefined) => {
+    hubspotMappingRef.current = mapping;
+
+    const currentValues = form.getValues();
+    const validatedFormValues = ZDateFieldFormSchema.safeParse(currentValues);
+
+    if (validatedFormValues.success) {
+      onValueChange({
+        type: 'date',
+        ...validatedFormValues.data,
+        hubspotMapping: mapping,
+      });
+    }
+  };
 
   return (
     <Form {...form}>
@@ -155,6 +177,11 @@ export const EditorFieldDateForm = ({
           <EditorGenericFontSizeField formControl={form.control} />
 
           <EditorGenericTextAlignField formControl={form.control} />
+
+          <EditorFieldHubspotMapping
+            value={hubspotMappingRef.current}
+            onValueChange={handleHubspotMappingChange}
+          />
         </fieldset>
       </form>
     </Form>

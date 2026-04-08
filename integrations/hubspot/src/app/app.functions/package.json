@@ -1,0 +1,8 @@
+{
+  "name": "lohnlab-esign-functions",
+  "version": "1.0.0",
+  "description": "Serverless Functions fuer die LohnLab eSign HubSpot-Integration",
+  "dependencies": {
+    "@hubspot/api-client": "^12.0.1"
+  }
+}

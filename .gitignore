@@ -71,3 +71,6 @@ scripts/bench-*
 
 # tmp
 tmp/
+
+# HubSpot config file
+hubspot.config.yml

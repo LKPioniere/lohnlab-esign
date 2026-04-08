@@ -1,0 +1,20 @@
+{
+  "appFunctions": {
+    "get-templates": {
+      "file": "get-templates.js",
+      "secrets": ["ESIGN_API_KEY", "ESIGN_BASE_URL"]
+    },
+    "send-contract": {
+      "file": "send-contract.js",
+      "secrets": ["ESIGN_API_KEY", "ESIGN_BASE_URL"]
+    },
+    "get-status": {
+      "file": "get-status.js",
+      "secrets": ["ESIGN_API_KEY", "ESIGN_BASE_URL"]
+    },
+    "create-presign-token": {
+      "file": "create-presign-token.js",
+      "secrets": ["ESIGN_API_KEY", "ESIGN_BASE_URL"]
+    }
+  }
+}

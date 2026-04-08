@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Trans, useLingui } from '@lingui/react/macro';
@@ -10,6 +10,7 @@ import {
   FIELD_DEFAULT_GENERIC_VERTICAL_ALIGN,
   FIELD_DEFAULT_LETTER_SPACING,
   FIELD_DEFAULT_LINE_HEIGHT,
+  type THubspotMapping,
   type TNumberFieldMeta as NumberFieldMeta,
   ZNumberFieldMeta,
 } from '@documenso/lib/types/field-meta';
@@ -42,6 +43,7 @@ import {
   EditorGenericTextAlignField,
   EditorGenericVerticalAlignField,
 } from './editor-field-generic-field-forms';
+import { EditorFieldHubspotMapping } from './editor-field-hubspot-mapping';
 
 const ZNumberFieldFormSchema = ZNumberFieldMeta.pick({
   label: true,
@@ -101,6 +103,10 @@ export const EditorFieldNumberForm = ({
 }: EditorFieldNumberFormProps) => {
   const { t } = useLingui();
 
+  const hubspotMappingRef = useRef<THubspotMapping | undefined>(
+    value.hubspotMapping ?? undefined,
+  );
+
   const form = useForm<TNumberFieldFormSchema>({
     resolver: zodResolver(ZNumberFieldFormSchema),
     mode: 'onChange',
@@ -127,7 +133,6 @@ export const EditorFieldNumberForm = ({
     control,
   });
 
-  // Dupecode/Inefficient: Done because native isValid won't work for our usecase.
   useEffect(() => {
     const validatedFormValues = ZNumberFieldFormSchema.safeParse(formValues);
 
@@ -139,9 +144,25 @@ export const EditorFieldNumberForm = ({
       onValueChange({
         type: 'number',
         ...validatedFormValues.data,
+        hubspotMapping: hubspotMappingRef.current,
       });
     }
   }, [formValues]);
+
+  const handleHubspotMappingChange = (mapping: THubspotMapping | undefined) => {
+    hubspotMappingRef.current = mapping;
+
+    const currentValues = form.getValues();
+    const validatedFormValues = ZNumberFieldFormSchema.safeParse(currentValues);
+
+    if (validatedFormValues.success) {
+      onValueChange({
+        type: 'number',
+        ...validatedFormValues.data,
+        hubspotMapping: mapping,
+      });
+    }
+  };
 
   return (
     <Form {...form}>
@@ -310,6 +331,11 @@ export const EditorFieldNumberForm = ({
               />
             </div>
           </section>
+
+          <EditorFieldHubspotMapping
+            value={hubspotMappingRef.current}
+            onValueChange={handleHubspotMappingChange}
+          />
         </fieldset>
       </form>
     </Form>
