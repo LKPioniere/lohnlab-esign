@@ -3,9 +3,7 @@
 ###########################
 FROM node:22-alpine3.22 AS base
 
-RUN apk add --no-cache openssl
-RUN apk add --no-cache font-freefont
-RUN apk add --no-cache libreoffice
+RUN apk add --no-cache openssl font-freefont libreoffice
 
 
 ###########################
@@ -13,14 +11,15 @@ RUN apk add --no-cache libreoffice
 ###########################
 FROM base AS builder
 
-# Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
-RUN apk add --no-cache libc6-compat
-RUN apk add --no-cache jq
+RUN apk add --no-cache libc6-compat jq
 WORKDIR /app
 
-COPY . .
-
 RUN npm install -g "turbo@^2.9.5"
+
+COPY package.json package-lock.json turbo.json lingui.config.ts ./
+COPY patches ./patches
+COPY packages ./packages
+COPY apps ./apps
 
 # Outputs to the /out folder
 # source: https://turbo.build/repo/docs/reference/command-line-reference/prune#--docker
@@ -31,11 +30,7 @@ RUN turbo prune @documenso/remix --docker
 ###########################
 FROM base AS installer
 
-# Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
-RUN apk add --no-cache libc6-compat
-RUN apk add --no-cache jq
-# Required for node_modules/aws-crt
-RUN apk add --no-cache make cmake g++ openssl bash
+RUN apk add --no-cache libc6-compat jq make cmake g++ openssl bash
 
 WORKDIR /app
 
@@ -80,7 +75,9 @@ COPY --from=builder /app/out/full/ .
 # Finally copy the turbo.json file so that we can run turbo commands
 COPY turbo.json turbo.json
 
-RUN npm install -g "turbo@^2.9.5"
+# Reuse turbo from builder instead of installing again
+COPY --from=builder /usr/local/lib/node_modules/turbo /usr/local/lib/node_modules/turbo
+COPY --from=builder /usr/local/bin/turbo /usr/local/bin/turbo
 
 RUN turbo run build --filter=@documenso/remix...
 
@@ -100,8 +97,8 @@ ARG NEXT_PRIVATE_TELEMETRY_HOST=""
 ENV NEXT_PRIVATE_TELEMETRY_HOST="$NEXT_PRIVATE_TELEMETRY_HOST"
 
 # Don't run production as root
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nodejs
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nodejs
 
 USER nodejs
 
@@ -113,7 +110,7 @@ COPY --from=builder --chown=nodejs:nodejs /app/out/full/packages/tailwind-config
 # Copy the patches across
 COPY --from=builder --chown=nodejs:nodejs /app/patches ./patches
 
-RUN npm ci --only=production
+RUN npm ci --omit=dev
 
 # Automatically leverage output traces to reduce image size
 # https://nodejs.org/docs/advanced-features/output-file-tracing
@@ -124,7 +121,7 @@ COPY --from=installer --chown=nodejs:nodejs /app/apps/remix/public ./apps/remix/
 COPY --from=installer --chown=nodejs:nodejs /app/packages/prisma/schema.prisma ./packages/prisma/schema.prisma
 COPY --from=installer --chown=nodejs:nodejs /app/packages/prisma/migrations ./packages/prisma/migrations
 
-# Generate the prisma client again
+# Generate the prisma client for the runner
 RUN npx prisma generate --schema ./packages/prisma/schema.prisma
 
 
