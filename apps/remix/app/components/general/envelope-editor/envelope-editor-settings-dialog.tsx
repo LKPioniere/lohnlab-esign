@@ -137,7 +137,7 @@ export const ZAddSettingsFormSchema = z.object({
     language: z
       .union([z.string(), z.enum(SUPPORTED_LANGUAGE_CODES)])
       .optional()
-      .default('en'),
+      .default('de'),
     emailId: z.string().nullable(),
     emailReplyTo: z.preprocess((val) => (val === '' ? undefined : val), zEmail().optional()),
     emailSettings: ZDocumentEmailSettingsSchema,
@@ -216,7 +216,7 @@ export const EnvelopeEditorSettingsDialog = ({
         distributionMethod:
           envelope.documentMeta.distributionMethod || DocumentDistributionMethod.EMAIL,
         redirectUrl: envelope.documentMeta.redirectUrl ?? '',
-        language: envelope.documentMeta.language ?? 'en',
+        language: envelope.documentMeta.language ?? 'de',
         emailId: envelope.documentMeta.emailId ?? null,
         emailReplyTo: envelope.documentMeta.emailReplyTo ?? undefined,
         emailSettings: ZDocumentEmailSettingsSchema.parse(envelope.documentMeta.emailSettings),
@@ -239,6 +239,7 @@ export const EnvelopeEditorSettingsDialog = ({
     );
 
   const emailSettings = form.watch('meta.emailSettings');
+  const distributionMethod = form.watch('meta.distributionMethod');
 
   const { data: emailData, isLoading: isLoadingEmails } =
     trpc.enterprise.organisation.email.find.useQuery(
@@ -381,14 +382,28 @@ export const EnvelopeEditorSettingsDialog = ({
                 return null;
               }
 
+              const isEmailDisabled =
+                tab.id === 'email' &&
+                distributionMethod === DocumentDistributionMethod.NONE;
+
               return (
                 <Button
                   key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
+                  onClick={() => {
+                    if (!isEmailDisabled) {
+                      setActiveTab(tab.id);
+                    }
+                  }}
                   variant="ghost"
+                  disabled={isEmailDisabled}
                   className={cn('w-full justify-start', {
                     'bg-secondary': activeTab === tab.id,
                   })}
+                  title={
+                    isEmailDisabled
+                      ? t`Email settings are not available when using link distribution`
+                      : undefined
+                  }
                 >
                   <tab.icon className="mr-2 h-5 w-5" />
                   {t(tab.title)}
@@ -677,7 +692,7 @@ export const EnvelopeEditorSettingsDialog = ({
                                       </li>
                                       <li>
                                         <Trans>
-                                          <strong>None</strong> - We will generate links which you
+                                          <strong>Link</strong> - We will generate links which you
                                           can send to the recipients manually.
                                         </Trans>
                                       </li>
@@ -693,7 +708,19 @@ export const EnvelopeEditorSettingsDialog = ({
                               </FormLabel>
 
                               <FormControl>
-                                <Select {...field} onValueChange={field.onChange}>
+                                <Select
+                                  {...field}
+                                  onValueChange={(value) => {
+                                    field.onChange(value);
+
+                                    if (
+                                      value === DocumentDistributionMethod.NONE &&
+                                      activeTab === 'email'
+                                    ) {
+                                      setActiveTab('general');
+                                    }
+                                  }}
+                                >
                                   <SelectTrigger className="bg-background text-muted-foreground">
                                     <SelectValue data-testid="documentDistributionMethodSelectValue" />
                                   </SelectTrigger>

@@ -5,6 +5,7 @@ import { DEFAULT_STANDARD_FONT_SIZE } from '../../constants/pdf';
 import type { TRadioFieldMeta } from '../../types/field-meta';
 import {
   createFieldHoverInteraction,
+  createRequiredIndicator,
   konvaTextFill,
   konvaTextFontFamily,
   upsertFieldGroup,
@@ -194,6 +195,11 @@ export const renderRadioFieldElement = (
     fieldGroup.add(dot);
     fieldGroup.add(text);
   });
+
+  const requiredIndicator = createRequiredIndicator(field, options);
+  if (requiredIndicator) {
+    fieldGroup.add(requiredIndicator);
+  }
 
   if (color !== 'readOnly' && mode !== 'export') {
     createFieldHoverInteraction({ fieldGroup, fieldRect, options });

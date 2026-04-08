@@ -10,6 +10,11 @@ export const ADVANCED_FIELD_TYPES_WITH_OPTIONAL_SETTING: FieldType[] = [
   FieldType.DROPDOWN,
   FieldType.RADIO,
   FieldType.CHECKBOX,
+  FieldType.DATE,
+  FieldType.SIGNATURE,
+  FieldType.INITIALS,
+  FieldType.NAME,
+  FieldType.EMAIL,
 ];
 
 /**
@@ -21,21 +26,18 @@ export const isRequiredField = (field: Field) => {
     return true;
   }
 
-  // Not sure why fieldMeta can be optional for advanced fields, but it is.
-  // Therefore we must assume if there is no fieldMeta, then the field is optional.
+  // If there is no fieldMeta, assume the field is required (safe default).
   if (!field.fieldMeta) {
-    return false;
+    return true;
   }
 
   const parsedData = ZFieldMetaSchema.safeParse(field.fieldMeta);
 
-  // If it fails, assume the field is optional.
-  // This needs to be logged somewhere.
   if (!parsedData.success) {
-    return false;
+    return true;
   }
 
-  return parsedData.data?.required === true;
+  return parsedData.data?.required !== false;
 };
 
 /**

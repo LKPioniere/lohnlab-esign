@@ -12,6 +12,7 @@ import { useLimits } from '@documenso/ee/server-only/limits/provider/client';
 import { useAnalytics } from '@documenso/lib/client-only/hooks/use-analytics';
 import { useCurrentOrganisation } from '@documenso/lib/client-only/providers/organisation';
 import { useSession } from '@documenso/lib/client-only/providers/session';
+import { isConvertibleDocument } from '@documenso/lib/constants/document-types';
 import { DEFAULT_DOCUMENT_TIME_ZONE, TIME_ZONES } from '@documenso/lib/constants/time-zones';
 import { AppError, AppErrorCode } from '@documenso/lib/errors/app-error';
 import { formatDocumentsPath, formatTemplatesPath } from '@documenso/lib/utils/teams';
@@ -87,8 +88,12 @@ export const DocumentUploadButtonLegacy = ({
     try {
       setIsLoading(true);
 
+      const title = isConvertibleDocument(file.type)
+        ? file.name.replace(/\.[^/.]+$/, '.pdf')
+        : file.name;
+
       const payload = {
-        title: file.name,
+        title,
         folderId: folderId ?? undefined,
         meta: {
           timezone: userTimezone,

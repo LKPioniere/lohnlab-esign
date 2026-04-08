@@ -1,0 +1,20 @@
+LohnLab eSign
+Copyright 2025-2026 LK Pioniere
+
+This product is a modified version of Documenso, originally developed by
+Documenso Inc. (https://documenso.com).
+
+Original project: https://github.com/documenso/documenso
+Original license: GNU Affero General Public License v3.0 (AGPL-3.0)
+
+This modified version is also distributed under the AGPL-3.0 license.
+See the LICENSE file for the full license text.
+
+Modifications include:
+- Rebranding to "LohnLab eSign"
+- Support for DOC, DOCX, ODT, and RTF file uploads with automatic PDF conversion
+- Additional internal customizations
+
+All original copyright notices and license terms from Documenso Inc. remain
+in effect. The original AUTHORS, CONTRIBUTORS, and license headers in source
+files have been preserved.

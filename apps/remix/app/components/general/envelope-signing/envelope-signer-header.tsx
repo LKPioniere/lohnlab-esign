@@ -19,7 +19,6 @@ import { EnvelopeDownloadDialog } from '~/components/dialogs/envelope-download-d
 import { useEmbedSigningContext } from '~/components/embed/embed-signing-context';
 import { BrandingLogo } from '~/components/general/branding-logo';
 
-import { BrandingLogoIcon } from '../branding-logo-icon';
 import { DocumentSigningRejectDialog } from '../document-signing/document-signing-reject-dialog';
 import { useRequiredEnvelopeSigningContext } from '../document-signing/envelope-signing-provider';
 import { EnvelopeSignerCompleteDialog } from './envelope-signing-complete-dialog';
@@ -43,10 +42,7 @@ export const EnvelopeSignerHeader = () => {
                 className="h-6 w-auto"
               />
             ) : (
-              <>
-                <BrandingLogo className="hidden md:flex" logoClassName="h-6 w-auto" />
-                <BrandingLogoIcon className="h-6 w-auto md:hidden" />
-              </>
+              <BrandingLogo logoClassName="h-6 w-auto" />
             )}
           </Link>
         )}

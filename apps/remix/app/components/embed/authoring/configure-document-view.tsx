@@ -69,7 +69,7 @@ export const ConfigureDocumentView = ({
         dateFormat: defaultValues?.meta?.dateFormat || DEFAULT_DOCUMENT_DATE_FORMAT,
         timezone: defaultValues?.meta?.timezone || DEFAULT_DOCUMENT_TIME_ZONE,
         redirectUrl: defaultValues?.meta?.redirectUrl || '',
-        language: defaultValues?.meta?.language || 'en',
+        language: defaultValues?.meta?.language || 'de',
         signatureTypes: defaultValues?.meta?.signatureTypes || [],
         signingOrder: defaultValues?.meta?.signingOrder || DocumentSigningOrder.PARALLEL,
         allowDictateNextSigner: defaultValues?.meta?.allowDictateNextSigner || false,

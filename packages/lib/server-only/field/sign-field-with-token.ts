@@ -199,9 +199,18 @@ export const signFieldWithToken = async ({
   const typedSignature = isSignatureField && !isBase64 ? value : undefined;
 
   if (field.type === FieldType.DATE) {
-    customText = DateTime.now()
-      .setZone(documentMeta?.timezone ?? DEFAULT_DOCUMENT_TIME_ZONE)
-      .toFormat(documentMeta?.dateFormat ?? DEFAULT_DOCUMENT_DATE_FORMAT);
+    const dateMeta = field.fieldMeta as { dateMode?: string; dateFormat?: string } | null;
+
+    if (dateMeta?.dateMode === 'custom' && typeof value === 'string' && value) {
+      customText = value;
+    } else {
+      const fieldDateFormat =
+        dateMeta?.dateFormat || documentMeta?.dateFormat || DEFAULT_DOCUMENT_DATE_FORMAT;
+
+      customText = DateTime.now()
+        .setZone(documentMeta?.timezone ?? DEFAULT_DOCUMENT_TIME_ZONE)
+        .toFormat(fieldDateFormat);
+    }
   }
 
   if (isSignatureField && !signatureImageAsBase64 && !typedSignature) {

@@ -12,6 +12,7 @@ import { useNavigate } from 'react-router';
 import * as z from 'zod';
 
 import { APP_DOCUMENT_UPLOAD_SIZE_LIMIT } from '@documenso/lib/constants/app';
+import { isAllowedDocumentType } from '@documenso/lib/constants/document-types';
 import {
   TEMPLATE_RECIPIENT_EMAIL_PLACEHOLDER_REGEX,
   TEMPLATE_RECIPIENT_NAME_PLACEHOLDER_REGEX,
@@ -300,25 +301,6 @@ export function TemplateUseDialog({
 
                     <FormField
                       control={form.control}
-                      name={`recipients.${index}.email`}
-                      render={({ field }) => (
-                        <FormItem className="w-full">
-                          {index === 0 && (
-                            <FormLabel required>
-                              <Trans>Email</Trans>
-                            </FormLabel>
-                          )}
-
-                          <FormControl>
-                            <Input {...field} aria-label="Email" placeholder={_(msg`Email`)} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
                       name={`recipients.${index}.name`}
                       render={({ field }) => (
                         <FormItem className="w-full">
@@ -334,6 +316,25 @@ export function TemplateUseDialog({
                               aria-label="Name"
                               placeholder={recipients[index].name || _(msg`Recipient ${index + 1}`)}
                             />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name={`recipients.${index}.email`}
+                      render={({ field }) => (
+                        <FormItem className="w-full">
+                          {index === 0 && (
+                            <FormLabel required>
+                              <Trans>Email</Trans>
+                            </FormLabel>
+                          )}
+
+                          <FormControl>
+                            <Input {...field} aria-label="Email" placeholder={_(msg`Email`)} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -548,7 +549,7 @@ export function TemplateUseDialog({
                                       type="file"
                                       id={`template-use-dialog-file-input-${item.envelopeItemId}`}
                                       className="hidden"
-                                      accept=".pdf,application/pdf"
+                                      accept=".pdf,.doc,.docx,.odt,.rtf,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.oasis.opendocument.text,application/rtf,text/rtf"
                                       onChange={(e) => {
                                         const file = e.target.files?.[0];
 
@@ -558,10 +559,12 @@ export function TemplateUseDialog({
                                           return;
                                         }
 
-                                        if (file.type !== 'application/pdf') {
+                                        if (!isAllowedDocumentType(file.type)) {
                                           form.setError('customDocumentData', {
                                             type: 'manual',
-                                            message: _(msg`Please select a PDF file`),
+                                            message: _(
+                                              msg`Please select a PDF, Word, ODT or RTF file`,
+                                            ),
                                           });
 
                                           return;

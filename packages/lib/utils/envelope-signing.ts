@@ -87,10 +87,22 @@ export const extractFieldInsertionValues = ({
         };
       }
 
+      if (typeof fieldValue.value === 'string') {
+        return {
+          customText: fieldValue.value,
+          inserted: true,
+        };
+      }
+
+      const fieldDateFormat =
+        (field.fieldMeta as { dateFormat?: string } | null)?.dateFormat ||
+        documentMeta.dateFormat ||
+        DEFAULT_DOCUMENT_DATE_FORMAT;
+
       return {
         customText: DateTime.now()
           .setZone(documentMeta.timezone ?? DEFAULT_DOCUMENT_TIME_ZONE)
-          .toFormat(documentMeta.dateFormat ?? DEFAULT_DOCUMENT_DATE_FORMAT),
+          .toFormat(fieldDateFormat),
         inserted: true,
       };
     })

@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
+import { PencilIcon } from 'lucide-react';
+
 import { ZDocumentTitleSchema } from '@documenso/trpc/server/document-router/schema';
 import { cn } from '@documenso/ui/lib/utils';
 
@@ -55,7 +57,7 @@ export const EnvelopeItemTitleInput = ({
   };
 
   return (
-    <div className="relative">
+    <div className="group/title relative flex items-center">
       {/* Hidden span to measure text width */}
       <span
         ref={measureRef}
@@ -83,6 +85,9 @@ export const EnvelopeItemTitleInput = ({
         )}
         placeholder={placeholder}
       />
+      {!disabled && (
+        <PencilIcon className="ml-1 h-3 w-3 text-muted-foreground/0 transition-colors group-hover/title:text-muted-foreground" />
+      )}
     </div>
   );
 };

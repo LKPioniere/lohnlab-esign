@@ -429,14 +429,22 @@ export const DocumentSigningPageViewV1 = ({
                 .with(FieldType.NAME, () => (
                   <DocumentSigningNameField key={field.id} field={field} />
                 ))
-                .with(FieldType.DATE, () => (
-                  <DocumentSigningDateField
-                    key={field.id}
-                    field={field}
-                    dateFormat={documentMeta?.dateFormat ?? DEFAULT_DOCUMENT_DATE_FORMAT}
-                    timezone={documentMeta?.timezone ?? DEFAULT_DOCUMENT_TIME_ZONE}
-                  />
-                ))
+                .with(FieldType.DATE, () => {
+                  const fieldDateMeta = field.fieldMeta as { dateFormat?: string } | undefined;
+                  const fieldDateFormat =
+                    fieldDateMeta?.dateFormat ||
+                    documentMeta?.dateFormat ||
+                    DEFAULT_DOCUMENT_DATE_FORMAT;
+
+                  return (
+                    <DocumentSigningDateField
+                      key={field.id}
+                      field={field}
+                      dateFormat={fieldDateFormat}
+                      timezone={documentMeta?.timezone ?? DEFAULT_DOCUMENT_TIME_ZONE}
+                    />
+                  );
+                })
                 .with(FieldType.EMAIL, () => (
                   <DocumentSigningEmailField key={field.id} field={field} />
                 ))

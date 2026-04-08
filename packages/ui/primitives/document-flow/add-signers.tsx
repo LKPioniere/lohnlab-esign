@@ -729,59 +729,10 @@ export const AddSignersFormPartial = ({
 
                               <FormField
                                 control={form.control}
-                                name={`signers.${index}.email`}
-                                render={({ field }) => (
-                                  <FormItem
-                                    className={cn('relative', {
-                                      'mb-6':
-                                        form.formState.errors.signers?.[index] &&
-                                        !form.formState.errors.signers[index]?.email,
-                                      'col-span-4': !showAdvancedSettings,
-                                      'col-span-5': showAdvancedSettings,
-                                    })}
-                                  >
-                                    {!showAdvancedSettings && (
-                                      <FormLabel required>
-                                        <Trans>Email</Trans>
-                                      </FormLabel>
-                                    )}
-
-                                    <FormControl>
-                                      <RecipientAutoCompleteInput
-                                        type="email"
-                                        placeholder={_(msg`Email`)}
-                                        value={field.value}
-                                        disabled={
-                                          snapshot.isDragging ||
-                                          isSubmitting ||
-                                          !canRecipientBeModified(signer.nativeId)
-                                        }
-                                        options={recipientSuggestions}
-                                        onSelect={(suggestion) =>
-                                          handleRecipientAutoCompleteSelect(index, suggestion)
-                                        }
-                                        onSearchQueryChange={(query) => {
-                                          field.onChange(query);
-                                          setRecipientSearchQuery(query);
-                                        }}
-                                        loading={isLoading}
-                                        data-testid="signer-email-input"
-                                        maxLength={254}
-                                        onBlur={handleAutoSave}
-                                      />
-                                    </FormControl>
-
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-
-                              <FormField
-                                control={form.control}
                                 name={`signers.${index}.name`}
                                 render={({ field }) => (
                                   <FormItem
-                                    className={cn({
+                                    className={cn('relative', {
                                       'mb-6':
                                         form.formState.errors.signers?.[index] &&
                                         !form.formState.errors.signers[index]?.name,
@@ -799,7 +750,7 @@ export const AddSignersFormPartial = ({
                                       <RecipientAutoCompleteInput
                                         type="text"
                                         placeholder={_(msg`Name`)}
-                                        {...field}
+                                        value={field.value}
                                         disabled={
                                           snapshot.isDragging ||
                                           isSubmitting ||
@@ -815,6 +766,55 @@ export const AddSignersFormPartial = ({
                                         }}
                                         loading={isLoading}
                                         maxLength={255}
+                                        onBlur={handleAutoSave}
+                                      />
+                                    </FormControl>
+
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+
+                              <FormField
+                                control={form.control}
+                                name={`signers.${index}.email`}
+                                render={({ field }) => (
+                                  <FormItem
+                                    className={cn({
+                                      'mb-6':
+                                        form.formState.errors.signers?.[index] &&
+                                        !form.formState.errors.signers[index]?.email,
+                                      'col-span-4': !showAdvancedSettings,
+                                      'col-span-5': showAdvancedSettings,
+                                    })}
+                                  >
+                                    {!showAdvancedSettings && (
+                                      <FormLabel required>
+                                        <Trans>Email</Trans>
+                                      </FormLabel>
+                                    )}
+
+                                    <FormControl>
+                                      <RecipientAutoCompleteInput
+                                        type="email"
+                                        placeholder={_(msg`Email`)}
+                                        {...field}
+                                        disabled={
+                                          snapshot.isDragging ||
+                                          isSubmitting ||
+                                          !canRecipientBeModified(signer.nativeId)
+                                        }
+                                        options={recipientSuggestions}
+                                        onSelect={(suggestion) =>
+                                          handleRecipientAutoCompleteSelect(index, suggestion)
+                                        }
+                                        onSearchQueryChange={(query) => {
+                                          field.onChange(query);
+                                          setRecipientSearchQuery(query);
+                                        }}
+                                        loading={isLoading}
+                                        data-testid="signer-email-input"
+                                        maxLength={254}
                                         onBlur={handleAutoSave}
                                       />
                                     </FormControl>

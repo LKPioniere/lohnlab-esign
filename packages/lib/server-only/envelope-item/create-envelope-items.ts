@@ -1,9 +1,13 @@
+import { extname } from 'path';
+
 import type { Envelope, EnvelopeItem, Recipient } from '@prisma/client';
 
+import { isConvertibleDocument } from '@documenso/lib/constants/document-types';
 import {
   convertPlaceholdersToFieldInputs,
   extractPdfPlaceholders,
 } from '@documenso/lib/server-only/pdf/auto-place-fields';
+import { convertDocumentToPdf } from '@documenso/lib/server-only/pdf/convert-document-to-pdf';
 import { findRecipientByPlaceholder } from '@documenso/lib/server-only/pdf/helpers';
 import { insertFormValuesInPdf } from '@documenso/lib/server-only/pdf/insert-form-values-in-pdf';
 import { normalizePdf } from '@documenso/lib/server-only/pdf/normalize-pdf';
@@ -49,7 +53,16 @@ export const UNSAFE_createEnvelopeItems = async ({
   // For each file: normalize, extract & clean placeholders, then upload.
   const envelopeItemsToCreate = await Promise.all(
     files.map(async ({ file, orderOverride, clientId }, index) => {
-      let buffer = Buffer.from(await file.arrayBuffer());
+      let buffer: Buffer;
+
+      if (isConvertibleDocument(file.type)) {
+        const rawBuffer = Buffer.from(await file.arrayBuffer());
+        const extension = extname(file.name) || '.docx';
+
+        buffer = await convertDocumentToPdf(rawBuffer, extension);
+      } else {
+        buffer = Buffer.from(await file.arrayBuffer());
+      }
 
       if (envelope.formValues) {
         buffer = await insertFormValuesInPdf({ pdf: buffer, formValues: envelope.formValues });
@@ -61,15 +74,19 @@ export const UNSAFE_createEnvelopeItems = async ({
 
       const { cleanedPdf, placeholders } = await extractPdfPlaceholders(normalized);
 
+      const pdfFileName = isConvertibleDocument(file.type)
+        ? file.name.replace(/\.[^/.]+$/, '.pdf')
+        : file.name;
+
       const { documentData } = await putPdfFileServerSide({
-        name: file.name,
+        name: pdfFileName,
         type: 'application/pdf',
         arrayBuffer: async () => Promise.resolve(cleanedPdf),
       });
 
       return {
         id: prefixedId('envelope_item'),
-        title: file.name,
+        title: pdfFileName,
         clientId,
         documentDataId: documentData.id,
         placeholders,

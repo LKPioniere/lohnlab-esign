@@ -20,7 +20,7 @@ export const IS_BILLING_ENABLED = () => env('NEXT_PUBLIC_FEATURE_BILLING_ENABLED
 export const API_V2_BETA_URL = '/api/v2-beta';
 export const API_V2_URL = '/api/v2';
 
-export const SUPPORT_EMAIL = env('NEXT_PUBLIC_SUPPORT_EMAIL') ?? 'support@documenso.com';
+export const SUPPORT_EMAIL = env('NEXT_PUBLIC_SUPPORT_EMAIL') ?? 'development@lohnlab.de';
 
 export const USE_INTERNAL_URL_BROWSERLESS = () =>
   env('NEXT_PUBLIC_USE_INTERNAL_URL_BROWSERLESS') === 'true';
@@ -39,3 +39,5 @@ export const NEXT_PRIVATE_USE_PLAYWRIGHT_PDF = () =>
 
 export const NEXT_PRIVATE_SIGNING_TIMESTAMP_AUTHORITY = () =>
   env('NEXT_PRIVATE_SIGNING_TIMESTAMP_AUTHORITY');
+
+export const SOURCE_CODE_URL = 'https://github.com/LKPioniere/documenso';

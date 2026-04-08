@@ -1,8 +1,12 @@
+import { extname } from 'path';
+
 import { EnvelopeType } from '@prisma/client';
 
+import { isConvertibleDocument } from '@documenso/lib/constants/document-types';
 import { getServerLimits } from '@documenso/ee/server-only/limits/server';
 import { AppError, AppErrorCode } from '@documenso/lib/errors/app-error';
 import { createEnvelope } from '@documenso/lib/server-only/envelope/create-envelope';
+import { convertDocumentToPdf } from '@documenso/lib/server-only/pdf/convert-document-to-pdf';
 import { insertFormValuesInPdf } from '@documenso/lib/server-only/pdf/insert-form-values-in-pdf';
 import { putNormalizedPdfFileServerSide } from '@documenso/lib/universal/upload/put-file.server';
 import { mapSecondaryIdToDocumentId } from '@documenso/lib/utils/envelope';
@@ -24,7 +28,7 @@ export const createDocumentRoute = authenticatedProcedure
     const { payload, file } = input;
 
     const {
-      title,
+      title: rawTitle,
       externalId,
       visibility,
       globalAccessAuth,
@@ -36,7 +40,20 @@ export const createDocumentRoute = authenticatedProcedure
       attachments,
     } = payload;
 
-    let pdf = Buffer.from(await file.arrayBuffer());
+    const title = isConvertibleDocument(file.type)
+      ? rawTitle.replace(/\.[^/.]+$/, '.pdf')
+      : rawTitle;
+
+    let pdf: Buffer;
+
+    if (isConvertibleDocument(file.type)) {
+      const rawBuffer = Buffer.from(await file.arrayBuffer());
+      const extension = extname(file.name) || '.docx';
+
+      pdf = await convertDocumentToPdf(rawBuffer, extension);
+    } else {
+      pdf = Buffer.from(await file.arrayBuffer());
+    }
 
     if (formValues) {
       // eslint-disable-next-line require-atomic-updates
@@ -46,8 +63,12 @@ export const createDocumentRoute = authenticatedProcedure
       });
     }
 
+    const pdfFileName = isConvertibleDocument(file.type)
+      ? file.name.replace(/\.[^/.]+$/, '.pdf')
+      : file.name;
+
     const { id: documentDataId } = await putNormalizedPdfFileServerSide({
-      name: file.name,
+      name: pdfFileName,
       type: 'application/pdf',
       arrayBuffer: async () => Promise.resolve(pdf),
     });

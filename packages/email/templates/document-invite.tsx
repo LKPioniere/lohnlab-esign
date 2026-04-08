@@ -6,7 +6,7 @@ import { OrganisationType } from '@prisma/client';
 
 import { RECIPIENT_ROLES_DESCRIPTION } from '@documenso/lib/constants/recipient-roles';
 
-import { Body, Container, Head, Hr, Html, Img, Link, Preview, Section, Text } from '../components';
+import { Body, Container, Head, Hr, Html, Img, Preview, Section, Text } from '../components';
 import { useBranding } from '../providers/branding';
 import { TemplateCustomMessageBody } from '../template-components/template-custom-message-body';
 import type { TemplateDocumentInviteProps } from '../template-components/template-document-invite';
@@ -21,6 +21,7 @@ export type DocumentInviteEmailTemplateProps = Partial<TemplateDocumentInvitePro
   teamEmail?: string;
   includeSenderDetails?: boolean;
   organisationType?: OrganisationType;
+  recipientName?: string;
 };
 
 export const DocumentInviteEmailTemplate = ({
@@ -35,6 +36,7 @@ export const DocumentInviteEmailTemplate = ({
   teamName = '',
   includeSenderDetails,
   organisationType,
+  recipientName,
 }: DocumentInviteEmailTemplateProps) => {
   const { _ } = useLingui();
   const branding = useBranding();
@@ -76,6 +78,12 @@ export const DocumentInviteEmailTemplate = ({
                 />
               )}
 
+              {recipientName && (
+                <Text className="mb-0 text-base text-slate-600">
+                  <Trans>Hi {recipientName},</Trans>
+                </Text>
+              )}
+
               <TemplateDocumentInvite
                 inviterName={inviterName}
                 inviterEmail={inviterEmail}
@@ -88,31 +96,12 @@ export const DocumentInviteEmailTemplate = ({
                 teamName={teamName}
                 includeSenderDetails={includeSenderDetails}
               />
-            </Section>
-          </Container>
 
-          <Container className="mx-auto mt-12 max-w-xl">
-            <Section>
-              {organisationType === OrganisationType.PERSONAL && (
-                <Text className="my-4 text-base font-semibold">
-                  <Trans>
-                    {inviterName}{' '}
-                    <Link className="font-normal text-slate-400" href="mailto:{inviterEmail}">
-                      ({inviterEmail})
-                    </Link>
-                  </Trans>
+              {customBody && (
+                <Text className="mt-2 text-sm text-slate-400">
+                  <TemplateCustomMessageBody text={customBody} />
                 </Text>
               )}
-
-              <Text className="mt-2 text-base text-slate-400">
-                {customBody ? (
-                  <TemplateCustomMessageBody text={customBody} />
-                ) : (
-                  <Trans>
-                    {inviterName} has invited you to {action} the document "{documentName}".
-                  </Trans>
-                )}
-              </Text>
             </Section>
           </Container>
 

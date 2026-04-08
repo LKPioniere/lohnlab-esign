@@ -7,7 +7,6 @@ import { useForm, useWatch } from 'react-hook-form';
 import type { z } from 'zod';
 
 import {
-  DEFAULT_FIELD_FONT_SIZE,
   type TRadioFieldMeta as RadioFieldMeta,
   ZRadioFieldMeta,
 } from '@documenso/lib/types/field-meta';
@@ -83,7 +82,7 @@ export const EditorFieldRadioForm = ({
       required: value.required || false,
       readOnly: value.readOnly || false,
       direction: value.direction || 'vertical',
-      fontSize: value.fontSize || DEFAULT_FIELD_FONT_SIZE,
+      fontSize: value.fontSize,
     },
   });
 

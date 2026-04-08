@@ -10,6 +10,7 @@ import {
 } from '../../types/field-meta';
 import {
   createFieldHoverInteraction,
+  createRequiredIndicator,
   konvaTextFill,
   konvaTextFontFamily,
   upsertFieldGroup,
@@ -29,6 +30,8 @@ const upsertFieldText = (field: FieldToRender, options: RenderFieldElementOption
 
   const fieldTypeName = translations?.[field.type] || field.type;
 
+  const isAutoFontSize = !fieldMeta?.fontSize;
+
   const fieldText: Konva.Text =
     pageLayer.findOne(`#${field.renderId}-text`) ||
     new Konva.Text({
@@ -39,7 +42,7 @@ const upsertFieldText = (field: FieldToRender, options: RenderFieldElementOption
   // Calculate text positioning based on alignment
   const textX = 0;
   const textY = 0;
-  const textFontSize = fieldMeta?.fontSize || DEFAULT_STANDARD_FONT_SIZE;
+  let textFontSize = fieldMeta?.fontSize || DEFAULT_STANDARD_FONT_SIZE;
 
   // By default, render the field name or label centered
   let textToRender: string = fieldMeta?.label || fieldTypeName;
@@ -95,6 +98,32 @@ const upsertFieldText = (field: FieldToRender, options: RenderFieldElementOption
     }
   }
 
+  // Auto-size: reduce font size until text fits within the field.
+  if (isAutoFontSize && field.inserted && textToRender) {
+    const availableWidth = fieldWidth - DEFAULT_TEXT_X_PADDING * 2;
+
+    fieldText.setAttrs({
+      text: textToRender,
+      fontFamily: konvaTextFontFamily,
+      wrap: 'none',
+      width: availableWidth,
+    });
+
+    const MIN_AUTO_FONT_SIZE = 6;
+
+    while (textFontSize > MIN_AUTO_FONT_SIZE) {
+      fieldText.fontSize(textFontSize);
+
+      const textWidth = fieldText.getTextWidth();
+
+      if (textWidth <= availableWidth && textFontSize <= fieldHeight) {
+        break;
+      }
+
+      textFontSize -= 0.5;
+    }
+  }
+
   // Note: Do not use native text padding since it's uniform.
   // We only want to have padding on the left and right hand sides.
   fieldText.setAttrs({
@@ -140,6 +169,11 @@ export const renderGenericTextFieldElement = (
 
   fieldGroup.add(fieldRect);
   fieldGroup.add(fieldText);
+
+  const requiredIndicator = createRequiredIndicator(field, options);
+  if (requiredIndicator) {
+    fieldGroup.add(requiredIndicator);
+  }
 
   // This is to keep the text inside the field at the same size
   // when the field is resized. Without this the text would be stretched.

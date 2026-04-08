@@ -1,9 +1,13 @@
+import { extname } from 'path';
+
 import { EnvelopeType } from '@prisma/client';
 
+import { isAllowedDocumentType, isConvertibleDocument } from '@documenso/lib/constants/document-types';
 import { getServerLimits } from '@documenso/ee/server-only/limits/server';
 import { AppError, AppErrorCode } from '@documenso/lib/errors/app-error';
 import { createEnvelope } from '@documenso/lib/server-only/envelope/create-envelope';
 import { extractPdfPlaceholders } from '@documenso/lib/server-only/pdf/auto-place-fields';
+import { convertDocumentToPdf } from '@documenso/lib/server-only/pdf/convert-document-to-pdf';
 import { normalizePdf } from '@documenso/lib/server-only/pdf/normalize-pdf';
 import type { ApiRequestMetadata } from '@documenso/lib/universal/extract-request-metadata';
 import { putPdfFileServerSide } from '@documenso/lib/universal/upload/put-file.server';
@@ -64,7 +68,7 @@ export const createEnvelopeRouteCaller = async ({
   const { payload, files } = input;
 
   const {
-    title,
+    title: rawTitle,
     type,
     externalId,
     visibility,
@@ -77,6 +81,9 @@ export const createEnvelopeRouteCaller = async ({
     attachments,
     delegatedDocumentOwner,
   } = payload;
+
+  const hasConvertibleFile = files.some((file) => isConvertibleDocument(file.type));
+  const title = hasConvertibleFile ? rawTitle.replace(/\.[^/.]+$/, '.pdf') : rawTitle;
 
   const { remaining, maximumEnvelopeItemCount } = await getServerLimits({
     userId,
@@ -97,17 +104,25 @@ export const createEnvelopeRouteCaller = async ({
     });
   }
 
-  if (files.some((file) => !file.type.startsWith('application/pdf'))) {
+  if (files.some((file) => !isAllowedDocumentType(file.type))) {
     throw new AppError('INVALID_DOCUMENT_FILE', {
-      message: 'You cannot upload non-PDF files',
+      message: 'Unsupported file type. Allowed: PDF, DOC, DOCX, ODT, RTF',
       statusCode: 400,
     });
   }
 
-  // For each file: normalize, extract & clean placeholders, then upload.
   const envelopeItems = await Promise.all(
     files.map(async (file) => {
-      let pdf = Buffer.from(await file.arrayBuffer());
+      let pdf: Buffer;
+
+      if (isConvertibleDocument(file.type)) {
+        const rawBuffer = Buffer.from(await file.arrayBuffer());
+        const extension = extname(file.name) || '.docx';
+
+        pdf = await convertDocumentToPdf(rawBuffer, extension);
+      } else {
+        pdf = Buffer.from(await file.arrayBuffer());
+      }
 
       if (formValues) {
         // eslint-disable-next-line require-atomic-updates
@@ -130,8 +145,12 @@ export const createEnvelopeRouteCaller = async ({
         arrayBuffer: async () => Promise.resolve(cleanedPdf),
       });
 
+      const pdfFileName = isConvertibleDocument(file.type)
+        ? file.name.replace(/\.[^/.]+$/, '.pdf')
+        : file.name;
+
       return {
-        title: file.name,
+        title: pdfFileName,
         documentDataId: documentData.id,
         placeholders,
       };

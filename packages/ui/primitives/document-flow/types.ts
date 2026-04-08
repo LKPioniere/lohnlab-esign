@@ -51,8 +51,8 @@ export const FRIENDLY_FIELD_TYPE: Record<FieldType, MessageDescriptor> = {
   [FieldType.EMAIL]: msg`Email`,
   [FieldType.NAME]: msg`Name`,
   [FieldType.NUMBER]: msg`Number`,
-  [FieldType.RADIO]: msg`Radio`,
-  [FieldType.CHECKBOX]: msg`Checkbox`,
+  [FieldType.RADIO]: msg`Single Choice`,
+  [FieldType.CHECKBOX]: msg`Multiple Choice`,
   [FieldType.DROPDOWN]: msg`Select`,
 };
 

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
+import type { MessageDescriptor } from '@lingui/core';
 import { msg } from '@lingui/core/macro';
 import { useLingui } from '@lingui/react/macro';
 import { FieldType } from '@prisma/client';
@@ -26,6 +27,19 @@ import { SignatureIcon } from '@documenso/ui/icons/signature';
 import { getRecipientColorStyles } from '@documenso/ui/lib/recipient-colors';
 import { cn } from '@documenso/ui/lib/utils';
 import { FRIENDLY_FIELD_TYPE } from '@documenso/ui/primitives/document-flow/types';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@documenso/ui/primitives/tooltip';
+
+type FieldButtonDef = {
+  type: FieldType;
+  icon: React.ComponentType<{ className?: string }>;
+  name: MessageDescriptor;
+  className?: string;
+  tooltip?: MessageDescriptor;
+};
 
 const MIN_HEIGHT_PX = 12;
 const MIN_WIDTH_PX = 36;
@@ -33,7 +47,7 @@ const MIN_WIDTH_PX = 36;
 const DEFAULT_HEIGHT_PX = MIN_HEIGHT_PX * 2.5;
 const DEFAULT_WIDTH_PX = MIN_WIDTH_PX * 2.5;
 
-export const fieldButtonList = [
+export const fieldButtonList: FieldButtonDef[] = [
   {
     type: FieldType.SIGNATURE,
     icon: SignatureIcon,
@@ -73,12 +87,14 @@ export const fieldButtonList = [
   {
     type: FieldType.RADIO,
     icon: DiscIcon,
-    name: msg`Radio`,
+    name: msg`Single Choice`,
+    tooltip: msg`Single Choice: The signer can select exactly one option from a group.`,
   },
   {
     type: FieldType.CHECKBOX,
     icon: CheckSquareIcon,
-    name: msg`Checkbox`,
+    name: msg`Multiple Choice`,
+    tooltip: msg`Multiple Choice: The signer can select multiple options at the same time.`,
   },
   {
     type: FieldType.DROPDOWN,
@@ -261,31 +277,46 @@ export const EnvelopeEditorFieldDragDrop = ({
   return (
     <>
       <div className="grid grid-cols-2 gap-x-2 gap-y-2.5">
-        {fieldButtonList.map((field) => (
-          <button
-            disabled={isFieldsDisabled}
-            key={field.type}
-            type="button"
-            onClick={() => setSelectedField(field.type)}
-            onMouseDown={() => setSelectedField(field.type)}
-            data-selected={selectedField === field.type ? true : undefined}
-            className={cn(
-              'group flex h-12 cursor-pointer items-center justify-center rounded-lg border border-border px-4 transition-colors',
-              selectedRecipientStyles.fieldButton,
-            )}
-          >
-            <p
+        {fieldButtonList.map((field) => {
+          const button = (
+            <button
+              disabled={isFieldsDisabled}
+              key={field.type}
+              type="button"
+              onClick={() => setSelectedField(field.type)}
+              onMouseDown={() => setSelectedField(field.type)}
+              data-selected={selectedField === field.type ? true : undefined}
               className={cn(
-                'flex items-center justify-center gap-x-1.5 font-noto text-sm font-normal text-muted-foreground group-data-[selected]:text-foreground',
-                field.className,
-                selectedRecipientStyles.fieldButtonText,
+                'group flex h-12 cursor-pointer items-center justify-center rounded-lg border border-border px-4 transition-colors',
+                selectedRecipientStyles.fieldButton,
               )}
             >
-              {field.type !== FieldType.SIGNATURE && <field.icon className="h-4 w-4" />}
-              {t(field.name)}
-            </p>
-          </button>
-        ))}
+              <p
+                className={cn(
+                  'flex items-center justify-center gap-x-1.5 font-noto text-sm font-normal text-muted-foreground group-data-[selected]:text-foreground',
+                  field.className,
+                  selectedRecipientStyles.fieldButtonText,
+                )}
+              >
+                {field.type !== FieldType.SIGNATURE && <field.icon className="h-4 w-4" />}
+                {t(field.name)}
+              </p>
+            </button>
+          );
+
+          if (field.tooltip) {
+            return (
+              <Tooltip key={field.type}>
+                <TooltipTrigger asChild>{button}</TooltipTrigger>
+                <TooltipContent className="max-w-xs whitespace-pre-line">
+                  {t(field.tooltip)}
+                </TooltipContent>
+              </Tooltip>
+            );
+          }
+
+          return button;
+        })}
       </div>
 
       {selectedField && (

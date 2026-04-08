@@ -899,10 +899,56 @@ export const EnvelopeEditorRecipientForm = () => {
 
                                 <FormField
                                   control={form.control}
-                                  name={`signers.${index}.email`}
+                                  name={`signers.${index}.name`}
                                   render={({ field }) => (
                                     <FormItem
                                       className={cn('relative w-full', {
+                                        'mb-6':
+                                          form.formState.errors.signers?.[index] &&
+                                          !form.formState.errors.signers[index]?.name,
+                                      })}
+                                    >
+                                      {!showAdvancedSettings && index === 0 && (
+                                        <FormLabel>
+                                          <Trans>Name</Trans>
+                                        </FormLabel>
+                                      )}
+
+                                      <FormControl>
+                                        <RecipientAutoCompleteInput
+                                          type="text"
+                                          placeholder={t`Recipient ${index + 1}`}
+                                          value={field.value}
+                                          disabled={
+                                            snapshot.isDragging ||
+                                            isSubmitting ||
+                                            !canRecipientBeModified(signer.id) ||
+                                            isDirectRecipient
+                                          }
+                                          options={recipientSuggestions}
+                                          onSelect={(suggestion) =>
+                                            handleRecipientAutoCompleteSelect(index, suggestion)
+                                          }
+                                          onSearchQueryChange={(query) => {
+                                            field.onChange(query);
+                                            setRecipientSearchQuery(query);
+                                          }}
+                                          loading={isLoading}
+                                          maxLength={255}
+                                        />
+                                      </FormControl>
+
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+
+                                <FormField
+                                  control={form.control}
+                                  name={`signers.${index}.email`}
+                                  render={({ field }) => (
+                                    <FormItem
+                                      className={cn('w-full', {
                                         'mb-6':
                                           form.formState.errors.signers?.[index] &&
                                           !form.formState.errors.signers[index]?.email,
@@ -918,7 +964,7 @@ export const EnvelopeEditorRecipientForm = () => {
                                         <RecipientAutoCompleteInput
                                           type="email"
                                           placeholder={t`Email`}
-                                          value={field.value}
+                                          {...field}
                                           disabled={
                                             snapshot.isDragging ||
                                             isSubmitting ||
@@ -936,52 +982,6 @@ export const EnvelopeEditorRecipientForm = () => {
                                           loading={isLoading}
                                           data-testid="signer-email-input"
                                           maxLength={254}
-                                        />
-                                      </FormControl>
-
-                                      <FormMessage />
-                                    </FormItem>
-                                  )}
-                                />
-
-                                <FormField
-                                  control={form.control}
-                                  name={`signers.${index}.name`}
-                                  render={({ field }) => (
-                                    <FormItem
-                                      className={cn('w-full', {
-                                        'mb-6':
-                                          form.formState.errors.signers?.[index] &&
-                                          !form.formState.errors.signers[index]?.name,
-                                      })}
-                                    >
-                                      {!showAdvancedSettings && index === 0 && (
-                                        <FormLabel>
-                                          <Trans>Name</Trans>
-                                        </FormLabel>
-                                      )}
-
-                                      <FormControl>
-                                        <RecipientAutoCompleteInput
-                                          type="text"
-                                          placeholder={t`Recipient ${index + 1}`}
-                                          {...field}
-                                          disabled={
-                                            snapshot.isDragging ||
-                                            isSubmitting ||
-                                            !canRecipientBeModified(signer.id) ||
-                                            isDirectRecipient
-                                          }
-                                          options={recipientSuggestions}
-                                          onSelect={(suggestion) =>
-                                            handleRecipientAutoCompleteSelect(index, suggestion)
-                                          }
-                                          onSearchQueryChange={(query) => {
-                                            field.onChange(query);
-                                            setRecipientSearchQuery(query);
-                                          }}
-                                          loading={isLoading}
-                                          maxLength={255}
                                         />
                                       </FormControl>
 

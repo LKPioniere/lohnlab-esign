@@ -8,10 +8,7 @@ import { PlusIcon, Trash } from 'lucide-react';
 import { useForm, useWatch } from 'react-hook-form';
 import { z } from 'zod';
 
-import {
-  DEFAULT_FIELD_FONT_SIZE,
-  type TDropdownFieldMeta as DropdownFieldMeta,
-} from '@documenso/lib/types/field-meta';
+import { type TDropdownFieldMeta as DropdownFieldMeta } from '@documenso/lib/types/field-meta';
 import {
   Form,
   FormControl,
@@ -99,7 +96,7 @@ export const EditorFieldDropdownForm = ({
       values: value.values || [{ value: t`Option 1` }],
       required: value.required || false,
       readOnly: value.readOnly || false,
-      fontSize: value.fontSize || DEFAULT_FIELD_FONT_SIZE,
+      fontSize: value.fontSize,
     },
   });
 
