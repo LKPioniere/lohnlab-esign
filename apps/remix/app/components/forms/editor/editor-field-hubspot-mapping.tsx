@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 import { Trans, useLingui } from '@lingui/react/macro';
-import { LinkIcon, XIcon } from 'lucide-react';
+import { InfoIcon, LinkIcon, XIcon } from 'lucide-react';
 
 import type { THubspotMapping } from '@documenso/lib/types/field-meta';
 import { trpc } from '@documenso/trpc/react';
@@ -16,6 +16,12 @@ import {
   SelectValue,
 } from '@documenso/ui/primitives/select';
 import { Separator } from '@documenso/ui/primitives/separator';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@documenso/ui/primitives/tooltip';
 
 import hubspotLogoDark from '../../../../../../packages/assets/hubspot-logo-dark.png';
 import hubspotLogoLight from '../../../../../../packages/assets/hubspot-logo-light.png';
@@ -108,6 +114,19 @@ export const EditorFieldHubspotMapping = ({
         <span className="text-sm font-medium">
           <Trans>HubSpot Mapping</Trans>
         </span>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <InfoIcon className="text-muted-foreground h-3.5 w-3.5 cursor-help" />
+            </TooltipTrigger>
+            <TooltipContent side="top" className="max-w-xs text-xs">
+              <Trans>
+                Verknüpfe dieses Feld mit einer HubSpot-Property. Beim
+                Versenden aus HubSpot wird der Wert automatisch eingesetzt.
+              </Trans>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
 
       {value ? (
@@ -133,7 +152,7 @@ export const EditorFieldHubspotMapping = ({
         <>
           <div>
             <Label className="text-xs">
-              <Trans>Object type</Trans>
+              <Trans>Objekttyp</Trans>
             </Label>
             <Select value={objectType} onValueChange={handleObjectTypeChange}>
               <SelectTrigger className="mt-1">
@@ -142,13 +161,18 @@ export const EditorFieldHubspotMapping = ({
               <SelectContent>
                 <SelectItem value="deals">Deal</SelectItem>
                 <SelectItem value="contacts">
-                  <Trans>Contact</Trans>
+                  <Trans>Kontakt</Trans>
                 </SelectItem>
                 <SelectItem value="companies">
-                  <Trans>Company</Trans>
+                  <Trans>Unternehmen</Trans>
                 </SelectItem>
               </SelectContent>
             </Select>
+            <p className="text-muted-foreground mt-1 text-[10px] leading-tight">
+              {objectType === 'deals' && t`Betrag, Dealname, Konditionen, Custom-Properties`}
+              {objectType === 'contacts' && t`Vorname, Nachname, E-Mail, Telefon`}
+              {objectType === 'companies' && t`Firmenname, Branche, Adresse, USt-ID`}
+            </p>
           </div>
 
           <div>
@@ -164,14 +188,14 @@ export const EditorFieldHubspotMapping = ({
                 <SelectValue
                   placeholder={
                     isLoadingProperties
-                      ? t`Loading...`
-                      : t`Select property`
+                      ? t`Wird geladen...`
+                      : t`Property wählen`
                   }
                 />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="__none__">
-                  <Trans>No mapping</Trans>
+                  <Trans>Keine Zuordnung</Trans>
                 </SelectItem>
                 {properties.map((prop) => (
                   <SelectItem key={prop.name} value={prop.name}>
