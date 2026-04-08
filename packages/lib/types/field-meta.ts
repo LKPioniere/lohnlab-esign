@@ -39,12 +39,23 @@ const ZFieldMetaVerticalAlign = z
   .enum(['top', 'middle', 'bottom'])
   .describe('The vertical alignment of the text');
 
+export const ZHubspotMappingSchema = z
+  .object({
+    objectType: z.enum(['deals', 'contacts', 'companies']),
+    propertyName: z.string(),
+    propertyLabel: z.string(),
+  })
+  .optional();
+
+export type THubspotMapping = z.infer<typeof ZHubspotMappingSchema>;
+
 export const ZBaseFieldMeta = z.object({
   label: z.string().optional(),
   placeholder: z.string().optional(),
   required: z.boolean().optional(),
   readOnly: z.boolean().optional(),
   fontSize: z.number().min(8).max(96).optional(),
+  hubspotMapping: ZHubspotMappingSchema,
 });
 
 export type TBaseFieldMeta = z.infer<typeof ZBaseFieldMeta>;

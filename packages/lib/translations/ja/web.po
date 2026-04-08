@@ -241,6 +241,9 @@ msgstr "{0, plural, other {選択したテンプレートを削除しようと�
 
 #. placeholder {0}: _(FRIENDLY_FIELD_TYPE[fieldType as FieldType])
 #. placeholder {0}: route.label
+#. placeholder {0}: step.descriptionKey
+#: apps/remix/app/components/dialogs/hubspot-guidance-dialog.tsx
+#: apps/remix/app/components/dialogs/hubspot-guidance-dialog.tsx
 #: apps/remix/app/components/general/document-signing/document-signing-auto-sign.tsx
 #: apps/remix/app/routes/_authenticated+/o.$orgUrl.settings._layout.tsx
 #: apps/remix/app/routes/_authenticated+/t.$teamUrl+/settings._layout.tsx
@@ -2659,6 +2662,10 @@ msgstr "サイドバーを折りたたむ"
 msgid "Communication"
 msgstr "コミュニケーション"
 
+#: apps/remix/app/components/forms/editor/editor-field-hubspot-mapping.tsx
+msgid "Company"
+msgstr ""
+
 #: apps/remix/app/components/dialogs/organisation-create-dialog.tsx
 msgid "Compare all plans and features in detail"
 msgstr "すべてのプランと機能を詳細に比較"
@@ -2832,6 +2839,10 @@ msgstr "確認メールを送信しました"
 #: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
 msgid "Consent to Electronic Transactions"
 msgstr "電子取引への同意"
+
+#: apps/remix/app/components/forms/editor/editor-field-hubspot-mapping.tsx
+msgid "Contact"
+msgstr ""
 
 #: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
 msgid "Contact Information"
@@ -3122,6 +3133,10 @@ msgstr "グループを作成"
 #: apps/remix/app/components/dialogs/team-group-create-dialog.tsx
 msgid "Create Groups"
 msgstr "グループを作成"
+
+#: apps/remix/app/components/dialogs/hubspot-guidance-dialog.tsx
+msgid "Create HubSpot template"
+msgstr ""
 
 #: apps/remix/app/components/dialogs/folder-create-dialog.tsx
 msgid "Create New Folder"
@@ -5377,6 +5392,10 @@ msgstr "フォルダ設定"
 msgid "Folder updated successfully"
 msgstr "フォルダは正常に更新されました"
 
+#: apps/remix/app/components/dialogs/hubspot-guidance-dialog.tsx
+msgid "Follow these steps to create a template that automatically fills in data from HubSpot."
+msgstr ""
+
 #: apps/remix/app/components/forms/editor/editor-field-generic-field-forms.tsx
 #: packages/ui/primitives/document-flow/field-items-advanced-settings/date-field.tsx
 #: packages/ui/primitives/document-flow/field-items-advanced-settings/email-field.tsx
@@ -5556,6 +5575,10 @@ msgstr "チームへ移動"
 msgid "Go to your <0>public profile settings</0> to add documents."
 msgstr "<0>公開プロフィール設定</0>に移動して文書を追加してください。"
 
+#: apps/remix/app/components/dialogs/hubspot-guidance-dialog.tsx
+msgid "Got it"
+msgstr ""
+
 #: packages/ui/primitives/signature-pad/signature-pad-color-picker.tsx
 msgid "Green"
 msgstr "緑"
@@ -5714,6 +5737,10 @@ msgstr "横"
 #: apps/remix/app/components/general/envelope-editor/envelope-editor-settings-dialog.tsx
 msgid "How long recipients have to complete this document after it is sent. Uses the team default when set to inherit."
 msgstr "この文書が送信されてから、受信者が完了するまでの猶予期間です。「継承」に設定すると、チームのデフォルト値が使用されます。"
+
+#: apps/remix/app/components/forms/editor/editor-field-hubspot-mapping.tsx
+msgid "HubSpot Mapping"
+msgstr ""
 
 #: apps/remix/app/routes/_unauthenticated+/organisation.sso.confirmation.$token.tsx
 msgid "I agree to link my account with this organization"
@@ -6321,6 +6348,7 @@ msgid "Loading suggestions..."
 msgstr "候補を読み込み中..."
 
 #: apps/remix/app/components/embed/embed-client-loading.tsx
+#: apps/remix/app/components/forms/editor/editor-field-hubspot-mapping.tsx
 #: apps/remix/app/components/general/default-recipients-multiselect-combobox.tsx
 #: apps/remix/app/components/general/document/document-page-view-recent-activity.tsx
 #: apps/remix/app/routes/_authenticated+/admin+/email-domains.$id.tsx
@@ -6923,6 +6951,10 @@ msgstr "現在、お客様が行う必要のある操作はありません。"
 msgid "No License Configured"
 msgstr "ライセンスが設定されていません"
 
+#: apps/remix/app/components/forms/editor/editor-field-hubspot-mapping.tsx
+msgid "No mapping"
+msgstr ""
+
 #: apps/remix/app/components/dialogs/team-member-create-dialog.tsx
 msgid "No members selected"
 msgstr "メンバーが選択されていません"
@@ -7103,6 +7135,10 @@ msgstr "許可されるメンバー数。0 = 無制限"
 #: apps/remix/app/routes/_authenticated+/admin+/organisations.$id.tsx
 msgid "Number of teams allowed. 0 = Unlimited"
 msgstr "許可されるチーム数。0 = 無制限"
+
+#: apps/remix/app/components/forms/editor/editor-field-hubspot-mapping.tsx
+msgid "Object type"
+msgstr ""
 
 #: apps/remix/app/components/general/admin-global-settings-section.tsx
 msgid "Off"
@@ -7970,6 +8006,10 @@ msgstr "プロフィールを更新しました"
 #: apps/remix/app/components/embed/multisign/multi-sign-document-list.tsx
 msgid "Progress"
 msgstr "進行状況"
+
+#: apps/remix/app/components/forms/editor/editor-field-hubspot-mapping.tsx
+msgid "Property"
+msgstr ""
 
 #: apps/remix/app/routes/_authenticated+/settings+/security.linked-accounts.tsx
 msgid "Provider"
@@ -8923,6 +8963,10 @@ msgstr "メールアドレスを選択または入力"
 #: apps/remix/app/components/general/document-signing/document-signing-auth-passkey.tsx
 msgid "Select passkey"
 msgstr "パスキーを選択"
+
+#: apps/remix/app/components/forms/editor/editor-field-hubspot-mapping.tsx
+msgid "Select property"
+msgstr ""
 
 #: apps/remix/app/components/tables/documents-table.tsx
 #: apps/remix/app/components/tables/templates-table.tsx

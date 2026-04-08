@@ -1,0 +1,20 @@
+{
+  "name": "LohnLab eSign",
+  "description": "Vertragsvorlagen mit Deal-Daten befuellen und zur digitalen Unterschrift versenden.",
+  "uid": "lohnlab-esign",
+  "scopes": [
+    "crm.objects.deals.read",
+    "crm.objects.contacts.read",
+    "crm.objects.companies.read"
+  ],
+  "public": false,
+  "extensions": {
+    "crm": {
+      "cards": [
+        {
+          "file": "extensions/esign-card.json"
+        }
+      ]
+    }
+  }
+}

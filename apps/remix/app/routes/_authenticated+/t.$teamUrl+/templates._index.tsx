@@ -19,6 +19,7 @@ import { Tabs, TabsList, TabsTrigger } from '@documenso/ui/primitives/tabs';
 
 import { EnvelopesBulkDeleteDialog } from '~/components/dialogs/envelopes-bulk-delete-dialog';
 import { EnvelopesBulkMoveDialog } from '~/components/dialogs/envelopes-bulk-move-dialog';
+import { HubspotGuidanceDialog } from '~/components/dialogs/hubspot-guidance-dialog';
 import { EnvelopeDropZoneWrapper } from '~/components/general/envelope/envelope-drop-zone-wrapper';
 import { FolderGrid } from '~/components/general/folder/folder-grid';
 import { EnvelopesTableBulkActionBar } from '~/components/tables/envelopes-table-bulk-action-bar';
@@ -58,6 +59,9 @@ export default function TemplatesPage() {
   );
   const [isBulkMoveDialogOpen, setIsBulkMoveDialogOpen] = useState(false);
   const [isBulkDeleteDialogOpen, setIsBulkDeleteDialogOpen] = useState(false);
+  const [showHubspotGuide, setShowHubspotGuide] = useState(
+    searchParams.get('from') === 'hubspot',
+  );
 
   const selectedEnvelopeIds = useMemo(() => {
     return Object.keys(rowSelection).filter((id) => rowSelection[id]);
@@ -204,6 +208,11 @@ export default function TemplatesPage() {
           </>
         )}
       </div>
+
+      <HubspotGuidanceDialog
+        open={showHubspotGuide}
+        onOpenChange={setShowHubspotGuide}
+      />
     </EnvelopeDropZoneWrapper>
   );
 }

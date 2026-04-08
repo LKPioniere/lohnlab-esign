@@ -241,6 +241,9 @@ msgstr "{0, plural, one {Zamierzasz usunąć zaznaczony szablon.} few {Zamierzas
 
 #. placeholder {0}: _(FRIENDLY_FIELD_TYPE[fieldType as FieldType])
 #. placeholder {0}: route.label
+#. placeholder {0}: step.descriptionKey
+#: apps/remix/app/components/dialogs/hubspot-guidance-dialog.tsx
+#: apps/remix/app/components/dialogs/hubspot-guidance-dialog.tsx
 #: apps/remix/app/components/general/document-signing/document-signing-auto-sign.tsx
 #: apps/remix/app/routes/_authenticated+/o.$orgUrl.settings._layout.tsx
 #: apps/remix/app/routes/_authenticated+/t.$teamUrl+/settings._layout.tsx
@@ -2659,6 +2662,10 @@ msgstr "Zwiń panel boczny"
 msgid "Communication"
 msgstr "Komunikacja"
 
+#: apps/remix/app/components/forms/editor/editor-field-hubspot-mapping.tsx
+msgid "Company"
+msgstr ""
+
 #: apps/remix/app/components/dialogs/organisation-create-dialog.tsx
 msgid "Compare all plans and features in detail"
 msgstr "Porównaj wszystkie plany i funkcje"
@@ -2832,6 +2839,10 @@ msgstr "Wiadomość potwierdzająca została wysłana"
 #: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
 msgid "Consent to Electronic Transactions"
 msgstr "Zgoda na umowy elektroniczne"
+
+#: apps/remix/app/components/forms/editor/editor-field-hubspot-mapping.tsx
+msgid "Contact"
+msgstr ""
 
 #: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
 msgid "Contact Information"
@@ -3122,6 +3133,10 @@ msgstr "Utwórz grupę"
 #: apps/remix/app/components/dialogs/team-group-create-dialog.tsx
 msgid "Create Groups"
 msgstr "Utwórz grupy"
+
+#: apps/remix/app/components/dialogs/hubspot-guidance-dialog.tsx
+msgid "Create HubSpot template"
+msgstr ""
 
 #: apps/remix/app/components/dialogs/folder-create-dialog.tsx
 msgid "Create New Folder"
@@ -5377,6 +5392,10 @@ msgstr "Ustawienia folderu"
 msgid "Folder updated successfully"
 msgstr "Folder został zaktualizowany"
 
+#: apps/remix/app/components/dialogs/hubspot-guidance-dialog.tsx
+msgid "Follow these steps to create a template that automatically fills in data from HubSpot."
+msgstr ""
+
 #: apps/remix/app/components/forms/editor/editor-field-generic-field-forms.tsx
 #: packages/ui/primitives/document-flow/field-items-advanced-settings/date-field.tsx
 #: packages/ui/primitives/document-flow/field-items-advanced-settings/email-field.tsx
@@ -5556,6 +5575,10 @@ msgstr "Przejdź do zespołu"
 msgid "Go to your <0>public profile settings</0> to add documents."
 msgstr "Przejdź do <0>ustawień profilu publicznego</0>, aby dodać dokumenty."
 
+#: apps/remix/app/components/dialogs/hubspot-guidance-dialog.tsx
+msgid "Got it"
+msgstr ""
+
 #: packages/ui/primitives/signature-pad/signature-pad-color-picker.tsx
 msgid "Green"
 msgstr "Zielony"
@@ -5714,6 +5737,10 @@ msgstr "Poziomo"
 #: apps/remix/app/components/general/envelope-editor/envelope-editor-settings-dialog.tsx
 msgid "How long recipients have to complete this document after it is sent. Uses the team default when set to inherit."
 msgstr "Czas, w którym odbiorcy muszą zakończyć dokument. Opcja dziedziczenia korzysta z domyślnych ustawień zespołu."
+
+#: apps/remix/app/components/forms/editor/editor-field-hubspot-mapping.tsx
+msgid "HubSpot Mapping"
+msgstr ""
 
 #: apps/remix/app/routes/_unauthenticated+/organisation.sso.confirmation.$token.tsx
 msgid "I agree to link my account with this organization"
@@ -6321,6 +6348,7 @@ msgid "Loading suggestions..."
 msgstr "Ładowanie sugestii..."
 
 #: apps/remix/app/components/embed/embed-client-loading.tsx
+#: apps/remix/app/components/forms/editor/editor-field-hubspot-mapping.tsx
 #: apps/remix/app/components/general/default-recipients-multiselect-combobox.tsx
 #: apps/remix/app/components/general/document/document-page-view-recent-activity.tsx
 #: apps/remix/app/routes/_authenticated+/admin+/email-domains.$id.tsx
@@ -6923,6 +6951,10 @@ msgstr "Nie musisz nic więcej robić."
 msgid "No License Configured"
 msgstr "Brak skonfigurowanej licencji"
 
+#: apps/remix/app/components/forms/editor/editor-field-hubspot-mapping.tsx
+msgid "No mapping"
+msgstr ""
+
 #: apps/remix/app/components/dialogs/team-member-create-dialog.tsx
 msgid "No members selected"
 msgstr "Nie wybrano żadnych użytkowników"
@@ -7103,6 +7135,10 @@ msgstr "Liczba dozwolonych użytkowników. 0 = Bez ograniczeń"
 #: apps/remix/app/routes/_authenticated+/admin+/organisations.$id.tsx
 msgid "Number of teams allowed. 0 = Unlimited"
 msgstr "Liczba dozwolonych zespołów. 0 = Bez ograniczeń"
+
+#: apps/remix/app/components/forms/editor/editor-field-hubspot-mapping.tsx
+msgid "Object type"
+msgstr ""
 
 #: apps/remix/app/components/general/admin-global-settings-section.tsx
 msgid "Off"
@@ -7970,6 +8006,10 @@ msgstr "Profil został zaktualizowany"
 #: apps/remix/app/components/embed/multisign/multi-sign-document-list.tsx
 msgid "Progress"
 msgstr "Postęp"
+
+#: apps/remix/app/components/forms/editor/editor-field-hubspot-mapping.tsx
+msgid "Property"
+msgstr ""
 
 #: apps/remix/app/routes/_authenticated+/settings+/security.linked-accounts.tsx
 msgid "Provider"
@@ -8923,6 +8963,10 @@ msgstr "Wybierz lub wpisz adres e-mail"
 #: apps/remix/app/components/general/document-signing/document-signing-auth-passkey.tsx
 msgid "Select passkey"
 msgstr "Wybierz klucz dostępu"
+
+#: apps/remix/app/components/forms/editor/editor-field-hubspot-mapping.tsx
+msgid "Select property"
+msgstr ""
 
 #: apps/remix/app/components/tables/documents-table.tsx
 #: apps/remix/app/components/tables/templates-table.tsx

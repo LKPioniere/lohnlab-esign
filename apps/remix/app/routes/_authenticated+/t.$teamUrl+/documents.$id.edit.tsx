@@ -1,9 +1,9 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import { msg } from '@lingui/core/macro';
 import { Trans } from '@lingui/react/macro';
 import { EnvelopeType } from '@prisma/client';
-import { Link, useNavigate } from 'react-router';
+import { Link, useNavigate, useSearchParams } from 'react-router';
 
 import { EnvelopeEditorProvider } from '@documenso/lib/client-only/providers/envelope-editor-provider';
 import { DO_NOT_INVALIDATE_QUERY_ON_MUTATION } from '@documenso/lib/constants/trpc';
@@ -12,6 +12,7 @@ import { trpc } from '@documenso/trpc/react';
 import { Button } from '@documenso/ui/primitives/button';
 import { Spinner } from '@documenso/ui/primitives/spinner';
 
+import { HubspotGuidanceDialog } from '~/components/dialogs/hubspot-guidance-dialog';
 import { EnvelopeEditor } from '~/components/general/envelope-editor/envelope-editor';
 import { EnvelopeEditorRenderProviderWrapper } from '~/components/general/envelope-editor/envelope-editor-renderer-provider-wrapper';
 import { GenericErrorLayout } from '~/components/general/generic-error-layout';
@@ -21,7 +22,12 @@ import type { Route } from './+types/documents.$id.edit';
 
 export default function EnvelopeEditorPage({ params }: Route.ComponentProps) {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const team = useCurrentTeam();
+
+  const [showHubspotGuide, setShowHubspotGuide] = useState(
+    searchParams.get('from') === 'hubspot',
+  );
 
   const {
     data: envelope,
@@ -104,6 +110,11 @@ export default function EnvelopeEditorPage({ params }: Route.ComponentProps) {
       <EnvelopeEditorRenderProviderWrapper>
         <EnvelopeEditor />
       </EnvelopeEditorRenderProviderWrapper>
+
+      <HubspotGuidanceDialog
+        open={showHubspotGuide}
+        onOpenChange={setShowHubspotGuide}
+      />
     </EnvelopeEditorProvider>
   );
 }

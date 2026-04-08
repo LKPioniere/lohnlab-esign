@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Trans, useLingui } from '@lingui/react/macro';
@@ -10,6 +10,7 @@ import {
   FIELD_DEFAULT_GENERIC_VERTICAL_ALIGN,
   FIELD_DEFAULT_LETTER_SPACING,
   FIELD_DEFAULT_LINE_HEIGHT,
+  type THubspotMapping,
   type TTextFieldMeta as TextFieldMeta,
   ZTextFieldMeta,
 } from '@documenso/lib/types/field-meta';
@@ -33,6 +34,7 @@ import {
   EditorGenericTextAlignField,
   EditorGenericVerticalAlignField,
 } from './editor-field-generic-field-forms';
+import { EditorFieldHubspotMapping } from './editor-field-hubspot-mapping';
 
 const ZTextFieldFormSchema = ZTextFieldMeta.pick({
   label: true,
@@ -72,6 +74,10 @@ export const EditorFieldTextForm = ({
 }: EditorFieldTextFormProps) => {
   const { t } = useLingui();
 
+  const hubspotMappingRef = useRef<THubspotMapping | undefined>(
+    value.hubspotMapping ?? undefined,
+  );
+
   const form = useForm<TTextFieldFormSchema>({
     resolver: zodResolver(ZTextFieldFormSchema),
     mode: 'onChange',
@@ -96,7 +102,6 @@ export const EditorFieldTextForm = ({
     control,
   });
 
-  // Dupecode/Inefficient: Done because native isValid won't work for our usecase.
   useEffect(() => {
     const validatedFormValues = ZTextFieldFormSchema.safeParse(formValues);
 
@@ -108,9 +113,25 @@ export const EditorFieldTextForm = ({
       onValueChange({
         type: 'text',
         ...validatedFormValues.data,
+        hubspotMapping: hubspotMappingRef.current,
       });
     }
   }, [formValues]);
+
+  const handleHubspotMappingChange = (mapping: THubspotMapping | undefined) => {
+    hubspotMappingRef.current = mapping;
+
+    const currentValues = form.getValues();
+    const validatedFormValues = ZTextFieldFormSchema.safeParse(currentValues);
+
+    if (validatedFormValues.success) {
+      onValueChange({
+        type: 'text',
+        ...validatedFormValues.data,
+        hubspotMapping: mapping,
+      });
+    }
+  };
 
   return (
     <Form {...form}>
@@ -239,6 +260,11 @@ export const EditorFieldTextForm = ({
           </div>
 
           <EditorGenericReadOnlyField formControl={form.control} />
+
+          <EditorFieldHubspotMapping
+            value={hubspotMappingRef.current}
+            onValueChange={handleHubspotMappingChange}
+          />
         </fieldset>
       </form>
     </Form>
