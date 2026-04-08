@@ -36,15 +36,9 @@ exports.main = async (context = {}) => {
       title: t.title || t.name || 'Unbenannt',
     }));
 
-    return {
-      statusCode: 200,
-      body: { templates },
-    };
+    return { templates };
   } catch (error) {
     console.error('get-templates Fehler:', error.message);
-    return {
-      statusCode: 500,
-      body: { error: error.message || ERROR_MESSAGES.FETCH_TEMPLATES },
-    };
+    return { error: error.message || ERROR_MESSAGES.FETCH_TEMPLATES, templates: [] };
   }
 };

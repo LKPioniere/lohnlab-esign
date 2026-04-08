@@ -78,8 +78,12 @@ const EsignCard = ({ context, fetchCrmObjectProperties }) => {
         propertiesToSend: ['hs_object_id'],
         parameters: {},
       })
-      .then((response) => response.templates || [])
-      .catch(() => []);
+      .then((response) => {
+        if (response && response.error) {
+          throw new Error(response.error);
+        }
+        return (response && response.templates) || [];
+      });
 
     const presignPromise = hubspot
       .serverless('create-presign-token', {
@@ -99,6 +103,10 @@ const EsignCard = ({ context, fetchCrmObjectProperties }) => {
         setTemplates(templateList);
         setCreateUrl(embedUrl);
         setState(STATES.SELECT_TEMPLATE);
+      })
+      .catch((err) => {
+        setError(err.message || 'Daten konnten nicht geladen werden.');
+        setState(STATES.ERROR);
       });
   }, []);
 

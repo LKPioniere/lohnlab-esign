@@ -17,7 +17,7 @@ exports.main = async (context = {}) => {
     const dealId = dealProperties.hs_object_id;
 
     if (!templateId) {
-      return { statusCode: 400, body: { error: ERROR_MESSAGES.NO_TEMPLATE } };
+      return { error: ERROR_MESSAGES.NO_TEMPLATE };
     }
 
     const apiKey = process.env['ESIGN_API_KEY'];
@@ -112,10 +112,7 @@ exports.main = async (context = {}) => {
     );
 
     if (!contact || !contact.email) {
-      return {
-        statusCode: 400,
-        body: { error: ERROR_MESSAGES.NO_RECIPIENT },
-      };
+      return { error: ERROR_MESSAGES.NO_RECIPIENT };
     }
 
     if (requiredObjectTypes.has('companies')) {
@@ -197,23 +194,17 @@ exports.main = async (context = {}) => {
     );
 
     return {
-      statusCode: 200,
-      body: {
-        documentId: result.documentId || result.id,
-        recipient: {
-          name: recipientName,
-          email: contact.email,
-        },
-        prefillFields,
-        fieldSummary,
+      documentId: result.documentId || result.id,
+      recipient: {
+        name: recipientName,
+        email: contact.email,
       },
+      prefillFields,
+      fieldSummary,
     };
   } catch (error) {
     console.error('send-contract Fehler:', error.message);
-    return {
-      statusCode: 500,
-      body: { error: error.message || ERROR_MESSAGES.SEND_CONTRACT },
-    };
+    return { error: error.message || ERROR_MESSAGES.SEND_CONTRACT };
   }
 };
 

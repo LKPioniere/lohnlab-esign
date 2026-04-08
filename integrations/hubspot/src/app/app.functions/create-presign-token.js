@@ -37,18 +37,12 @@ exports.main = async (context = {}) => {
     const embedUrl = `${baseUrl}/embed/v1/authoring/template/create?token=${encodeURIComponent(data.token)}&from=hubspot`;
 
     return {
-      statusCode: 200,
-      body: {
-        embedUrl,
-        token: data.token,
-        expiresIn: data.expiresIn,
-      },
+      embedUrl,
+      token: data.token,
+      expiresIn: data.expiresIn,
     };
   } catch (error) {
     console.error('create-presign-token Fehler:', error.message);
-    return {
-      statusCode: 500,
-      body: { error: error.message || ERROR_MESSAGES.CREATE_TOKEN },
-    };
+    return { error: error.message || ERROR_MESSAGES.CREATE_TOKEN };
   }
 };

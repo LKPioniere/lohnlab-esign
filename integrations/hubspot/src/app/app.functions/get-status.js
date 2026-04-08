@@ -24,7 +24,7 @@ exports.main = async (context = {}) => {
     const { documentId } = context.parameters || {};
 
     if (!documentId) {
-      return { statusCode: 400, body: { error: ERROR_MESSAGES.NO_DOCUMENT_ID } };
+      return { error: ERROR_MESSAGES.NO_DOCUMENT_ID };
     }
 
     const apiKey = process.env['ESIGN_API_KEY'];
@@ -65,21 +65,15 @@ exports.main = async (context = {}) => {
     }));
 
     return {
-      statusCode: 200,
-      body: {
-        documentId,
-        status: rawStatus,
-        statusLabel: label,
-        statusVariant: variant,
-        recipients,
-        completedAt: data.completedAt || null,
-      },
+      documentId,
+      status: rawStatus,
+      statusLabel: label,
+      statusVariant: variant,
+      recipients,
+      completedAt: data.completedAt || null,
     };
   } catch (error) {
     console.error('get-status Fehler:', error.message);
-    return {
-      statusCode: 500,
-      body: { error: error.message || ERROR_MESSAGES.FETCH_STATUS },
-    };
+    return { error: error.message || ERROR_MESSAGES.FETCH_STATUS };
   }
 };
