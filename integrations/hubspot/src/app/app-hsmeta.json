@@ -1,0 +1,33 @@
+{
+  "uid": "lohnlab_esign",
+  "type": "app",
+  "config": {
+    "name": "LohnLab eSign",
+    "description": "Dokumentvorlagen mit Deal-Daten befuellen und zur digitalen Unterschrift versenden.",
+    "distribution": "private",
+    "auth": {
+      "type": "static",
+      "requiredScopes": [
+        "crm.objects.deals.read",
+        "crm.objects.deals.write",
+        "crm.objects.contacts.read",
+        "crm.objects.contacts.write",
+        "crm.objects.companies.read",
+        "crm.objects.companies.write",
+        "crm.schemas.deals.read",
+        "crm.objects.owners.read",
+        "files"
+      ],
+      "optionalScopes": [],
+      "conditionallyRequiredScopes": []
+    },
+    "permittedUrls": {
+      "fetch": ["https://esign.lohnlab.de"],
+      "iframe": [],
+      "img": []
+    },
+    "support": {
+      "supportEmail": "support@lohnlab.de"
+    }
+  }
+}

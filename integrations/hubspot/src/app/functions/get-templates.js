@@ -34,6 +34,10 @@ exports.main = async (context = {}) => {
     const templates = (data.data || data.templates || []).map((t) => ({
       id: t.id,
       title: t.title || t.name || 'Unbenannt',
+      recipients: (t.recipients || []).map((r) => ({
+        id: r.id,
+        role: r.role,
+      })),
     }));
 
     return { templates };

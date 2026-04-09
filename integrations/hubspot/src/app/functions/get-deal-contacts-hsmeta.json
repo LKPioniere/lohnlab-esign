@@ -1,0 +1,8 @@
+{
+  "uid": "get-deal-contacts",
+  "type": "app-function",
+  "config": {
+    "entrypoint": "/app/functions/get-deal-contacts.js",
+    "secretKeys": []
+  }
+}

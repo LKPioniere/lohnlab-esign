@@ -136,131 +136,136 @@ export const EditorFieldTextForm = ({
   return (
     <Form {...form}>
       <form>
-        <fieldset className="flex flex-col gap-2">
-          <EditorGenericFontSizeField className="w-full" formControl={form.control} />
+        <fieldset className="flex flex-col gap-4">
+          {/* Inhalt */}
+          <div className="flex flex-col gap-2">
+            <FormField
+              control={form.control}
+              name="label"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    <Trans>Label</Trans>
+                  </FormLabel>
+                  <FormControl>
+                    <Input data-testid="field-form-label" placeholder={t`Field label`} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          <div className="flex w-full flex-row gap-x-4">
+            <FormField
+              control={form.control}
+              name="placeholder"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    <Trans>Placeholder</Trans>
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      data-testid="field-form-placeholder"
+                      placeholder={t`Field placeholder`}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="text"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    <Trans>Add text</Trans>
+                  </FormLabel>
+                  <FormControl>
+                    <Textarea
+                      data-testid="field-form-text"
+                      className="h-auto"
+                      placeholder={t`Add text to the field`}
+                      {...field}
+                      onChange={(e) => {
+                        const values = form.getValues();
+                        const characterLimit = values.characterLimit || 0;
+                        let textValue = e.target.value;
+
+                        if (characterLimit > 0 && textValue.length > characterLimit) {
+                          textValue = textValue.slice(0, characterLimit);
+                        }
+
+                        e.target.value = textValue;
+                        field.onChange(e);
+                      }}
+                      rows={1}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="characterLimit"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    <Trans>Character Limit</Trans>
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      data-testid="field-form-characterLimit"
+                      className="bg-background"
+                      placeholder={t`Character limit`}
+                      {...field}
+                      value={field.value || ''}
+                      onChange={(e) => {
+                        const values = form.getValues();
+                        const characterLimit = parseInt(e.target.value, 10) || 0;
+
+                        field.onChange(characterLimit || '');
+
+                        const textValue = values.text || '';
+
+                        if (characterLimit > 0 && textValue.length > characterLimit) {
+                          form.setValue('text', textValue.slice(0, characterLimit));
+                        }
+                      }}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          {/* Darstellung */}
+          <div className="flex flex-col gap-2">
+            <EditorGenericFontSizeField className="w-full" formControl={form.control} />
+
             <EditorGenericTextAlignField className="w-full" formControl={form.control} />
 
             <EditorGenericVerticalAlignField className="w-full" formControl={form.control} />
+
+            <div className="flex w-full flex-row gap-x-4">
+              <EditorGenericLineHeightField className="w-full" formControl={form.control} />
+
+              <EditorGenericLetterSpacingField className="w-full" formControl={form.control} />
+            </div>
           </div>
 
-          <FormField
-            control={form.control}
-            name="label"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  <Trans>Label</Trans>
-                </FormLabel>
-                <FormControl>
-                  <Input data-testid="field-form-label" placeholder={t`Field label`} {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="placeholder"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  <Trans>Placeholder</Trans>
-                </FormLabel>
-                <FormControl>
-                  <Input
-                    data-testid="field-form-placeholder"
-                    placeholder={t`Field placeholder`}
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="text"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  <Trans>Add text</Trans>
-                </FormLabel>
-                <FormControl>
-                  <Textarea
-                    data-testid="field-form-text"
-                    className="h-auto"
-                    placeholder={t`Add text to the field`}
-                    {...field}
-                    onChange={(e) => {
-                      const values = form.getValues();
-                      const characterLimit = values.characterLimit || 0;
-                      let textValue = e.target.value;
-
-                      if (characterLimit > 0 && textValue.length > characterLimit) {
-                        textValue = textValue.slice(0, characterLimit);
-                      }
-
-                      e.target.value = textValue;
-                      field.onChange(e);
-                    }}
-                    rows={1}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="characterLimit"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  <Trans>Character Limit</Trans>
-                </FormLabel>
-                <FormControl>
-                  <Input
-                    data-testid="field-form-characterLimit"
-                    className="bg-background"
-                    placeholder={t`Character limit`}
-                    {...field}
-                    value={field.value || ''}
-                    onChange={(e) => {
-                      const values = form.getValues();
-                      const characterLimit = parseInt(e.target.value, 10) || 0;
-
-                      field.onChange(characterLimit || '');
-
-                      const textValue = values.text || '';
-
-                      if (characterLimit > 0 && textValue.length > characterLimit) {
-                        form.setValue('text', textValue.slice(0, characterLimit));
-                      }
-                    }}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <div className="flex w-full flex-row gap-x-4">
-            <EditorGenericLineHeightField className="w-full" formControl={form.control} />
-
-            <EditorGenericLetterSpacingField className="w-full" formControl={form.control} />
-          </div>
-
-          <div className="mt-1">
+          {/* Verhalten */}
+          <div className="flex flex-col gap-1">
             <EditorGenericRequiredField formControl={form.control} />
+            <EditorGenericReadOnlyField formControl={form.control} />
           </div>
 
-          <EditorGenericReadOnlyField formControl={form.control} />
-
+          {/* HubSpot */}
           <EditorFieldHubspotMapping
             value={hubspotMappingRef.current}
             onValueChange={handleHubspotMappingChange}

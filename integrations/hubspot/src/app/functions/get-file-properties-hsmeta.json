@@ -1,0 +1,8 @@
+{
+  "uid": "get-file-properties",
+  "type": "app-function",
+  "config": {
+    "entrypoint": "/app/functions/get-file-properties.js",
+    "secretKeys": []
+  }
+}

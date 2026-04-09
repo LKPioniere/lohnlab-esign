@@ -3,7 +3,7 @@ import { useMemo, useState } from 'react';
 import { msg } from '@lingui/core/macro';
 import { Trans } from '@lingui/react/macro';
 import { EnvelopeType, OrganisationType } from '@prisma/client';
-import { Bird } from 'lucide-react';
+import { Bird, LinkIcon } from 'lucide-react';
 import { parseAsStringLiteral, useQueryState } from 'nuqs';
 import { useParams, useSearchParams } from 'react-router';
 
@@ -14,8 +14,12 @@ import { formatAvatarUrl } from '@documenso/lib/utils/avatars';
 import { formatDocumentsPath, formatTemplatesPath } from '@documenso/lib/utils/teams';
 import { trpc } from '@documenso/trpc/react';
 import { Avatar, AvatarFallback, AvatarImage } from '@documenso/ui/primitives/avatar';
+import { Button } from '@documenso/ui/primitives/button';
 import type { RowSelectionState } from '@documenso/ui/primitives/data-table';
 import { Tabs, TabsList, TabsTrigger } from '@documenso/ui/primitives/tabs';
+
+import hubspotLogoDark from '../../../../../../packages/assets/hubspot-logo-dark.png';
+import hubspotLogoLight from '../../../../../../packages/assets/hubspot-logo-light.png';
 
 import { EnvelopesBulkDeleteDialog } from '~/components/dialogs/envelopes-bulk-delete-dialog';
 import { EnvelopesBulkMoveDialog } from '~/components/dialogs/envelopes-bulk-move-dialog';
@@ -107,17 +111,31 @@ export default function TemplatesPage() {
         {!isOrgView && <FolderGrid type={FolderType.TEMPLATE} parentId={folderId ?? null} />}
 
         <div className="mt-8">
-          <div className="flex flex-row items-center">
-            <Avatar className="mr-3 h-12 w-12 border-2 border-solid border-white dark:border-border">
-              {team.avatarImageId && <AvatarImage src={formatAvatarUrl(team.avatarImageId)} />}
-              <AvatarFallback className="text-xs text-muted-foreground">
-                {team.name.slice(0, 1)}
-              </AvatarFallback>
-            </Avatar>
+          <div className="flex flex-row items-center justify-between">
+            <div className="flex flex-row items-center">
+              <Avatar className="mr-3 h-12 w-12 border-2 border-solid border-white dark:border-border">
+                {team.avatarImageId && <AvatarImage src={formatAvatarUrl(team.avatarImageId)} />}
+                <AvatarFallback className="text-xs text-muted-foreground">
+                  {team.name.slice(0, 1)}
+                </AvatarFallback>
+              </Avatar>
 
-            <h1 className="truncate text-2xl font-semibold md:text-3xl">
-              <Trans>Templates</Trans>
-            </h1>
+              <h1 className="truncate text-2xl font-semibold md:text-3xl">
+                <Trans>Templates</Trans>
+              </h1>
+            </div>
+
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-2"
+              onClick={() => setShowHubspotGuide(true)}
+            >
+              <Trans>In</Trans>
+              <img src={hubspotLogoDark} alt="HubSpot" className="h-8 dark:hidden" />
+              <img src={hubspotLogoLight} alt="HubSpot" className="hidden h-8 dark:block" />
+              <Trans>einbinden</Trans>
+            </Button>
           </div>
 
           {showOrgTab && (

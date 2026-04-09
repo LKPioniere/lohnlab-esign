@@ -1,0 +1,11 @@
+{
+  "uid": "esign_card",
+  "type": "card",
+  "config": {
+    "name": "LohnLab eSign",
+    "description": "Vertraege direkt aus einem Deal mit LohnLab eSign versenden.",
+    "entrypoint": "/app/cards/EsignCard.jsx",
+    "location": "crm.record.sidebar",
+    "objectTypes": ["DEALS"]
+  }
+}

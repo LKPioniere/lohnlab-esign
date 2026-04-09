@@ -1,7 +1,7 @@
 const hubspotApi = require('@hubspot/api-client');
 
 const ERROR_MESSAGES = {
-  SEND_CONTRACT: 'Vertrag konnte nicht versendet werden.',
+  SEND_CONTRACT: 'Dokument konnte nicht versendet werden.',
   NO_API_KEY: 'eSign API-Schluessel ist nicht konfiguriert.',
   NO_BASE_URL: 'eSign-Server-URL ist nicht konfiguriert.',
   NO_TEMPLATE: 'Keine Vorlage ausgewaehlt.',
@@ -12,7 +12,8 @@ const ERROR_MESSAGES = {
 
 exports.main = async (context = {}) => {
   try {
-    const { templateId } = context.parameters || {};
+    const { templateId, contactId, contactEmail, contactName, fieldOverrides: fieldOverridesJson, assignedProperty } = context.parameters || {};
+    const fieldOverrides = fieldOverridesJson ? JSON.parse(fieldOverridesJson) : {};
     const dealProperties = context.propertiesToSend || {};
     const dealId = dealProperties.hs_object_id;
 
@@ -98,18 +99,50 @@ exports.main = async (context = {}) => {
       }
     }
 
-    const contactProps = [
-      'firstname',
-      'lastname',
-      'email',
-      'company',
-      ...requiredContactProps,
-    ];
-    contact = await getAssociatedContact(
-      hubspotClient,
-      dealId,
-      [...new Set(contactProps)],
-    );
+    if (contactId) {
+      const contactProps = [
+        'firstname',
+        'lastname',
+        'email',
+        'company',
+        ...requiredContactProps,
+      ];
+      try {
+        const contactResponse =
+          await hubspotClient.crm.contacts.basicApi.getById(
+            contactId,
+            [...new Set(contactProps)],
+          );
+        contact = contactResponse.properties || null;
+      } catch (err) {
+        console.error('Kontakt laden Fehler:', err.message);
+      }
+    }
+
+    if (!contact) {
+      const contactProps = [
+        'firstname',
+        'lastname',
+        'email',
+        'company',
+        ...requiredContactProps,
+      ];
+      contact = await getAssociatedContact(
+        hubspotClient,
+        dealId,
+        [...new Set(contactProps)],
+      );
+    }
+
+    if (contactEmail) {
+      contact = contact || {};
+      contact.email = contact.email || contactEmail;
+      if (contactName && !contact.firstname) {
+        const parts = contactName.split(' ');
+        contact.firstname = parts[0] || '';
+        contact.lastname = parts.slice(1).join(' ') || '';
+      }
+    }
 
     if (!contact || !contact.email) {
       return { error: ERROR_MESSAGES.NO_RECIPIENT };
@@ -128,6 +161,52 @@ exports.main = async (context = {}) => {
       contacts: contact,
       companies: company || {},
     };
+
+    if (Object.keys(fieldOverrides).length > 0) {
+      const hubspotUpdates = { deals: {}, contacts: {}, companies: {} };
+
+      for (const [key, value] of Object.entries(fieldOverrides)) {
+        const [objectType, propertyName] = key.split(':');
+        if (objectType && propertyName && value) {
+          dataLookup[objectType] = dataLookup[objectType] || {};
+          dataLookup[objectType][propertyName] = value;
+          hubspotUpdates[objectType] = hubspotUpdates[objectType] || {};
+          hubspotUpdates[objectType][propertyName] = value;
+        }
+      }
+
+      try {
+        if (Object.keys(hubspotUpdates.deals).length > 0) {
+          await hubspotClient.crm.deals.basicApi.update(dealId, {
+            properties: hubspotUpdates.deals,
+          });
+          console.log('Deal-Properties aktualisiert:', Object.keys(hubspotUpdates.deals));
+        }
+
+        if (Object.keys(hubspotUpdates.contacts).length > 0 && contactId) {
+          await hubspotClient.crm.contacts.basicApi.update(contactId, {
+            properties: hubspotUpdates.contacts,
+          });
+          console.log('Kontakt-Properties aktualisiert:', Object.keys(hubspotUpdates.contacts));
+        }
+
+        if (Object.keys(hubspotUpdates.companies).length > 0) {
+          const companyAssoc = await hubspotClient.crm.associations.v4.basicApi.getPage(
+            'deals', dealId, 'companies', undefined, 1,
+          );
+          const companyId = (companyAssoc.results || [])[0]?.toObjectId;
+
+          if (companyId) {
+            await hubspotClient.crm.companies.basicApi.update(String(companyId), {
+              properties: hubspotUpdates.companies,
+            });
+            console.log('Unternehmens-Properties aktualisiert:', Object.keys(hubspotUpdates.companies));
+          }
+        }
+      } catch (err) {
+        console.error('HubSpot-Update Fehler:', err.message);
+      }
+    }
 
     const prefillFields = mappedFields
       .map((field) => {
@@ -153,6 +232,13 @@ exports.main = async (context = {}) => {
       .filter(Boolean)
       .join(' ');
 
+    const templateRecipients = (templateData.recipients || []);
+    const signerRecipient = templateRecipients.find((r) => r.role === 'SIGNER') || templateRecipients[0];
+
+    if (!signerRecipient) {
+      throw new Error('Die Vorlage hat keinen Empfaenger. Bitte fuege der Vorlage einen Empfaenger hinzu.');
+    }
+
     const response = await fetch(`${baseUrl}/api/v2/template/use`, {
       method: 'POST',
       headers: {
@@ -163,14 +249,14 @@ exports.main = async (context = {}) => {
         templateId: Number(templateId),
         recipients: [
           {
+            id: signerRecipient.id,
             email: contact.email,
             name: recipientName || contact.email,
-            role: 'SIGNER',
           },
         ],
         prefillFields,
-        distributeDocument: true,
-        externalId: `hubspot-deal-${dealId}`,
+        distributeDocument: false,
+        externalId: assignedProperty ? `hubspot-deal-${dealId}:${assignedProperty}` : `hubspot-deal-${dealId}`,
       }),
     });
 
@@ -183,6 +269,10 @@ exports.main = async (context = {}) => {
 
     const result = await response.json();
 
+    const envelopeId = result.envelopeId || result.id;
+    const documentId = result.documentId || result.id;
+    const previewUrl = `${baseUrl}/t/lohnlab/documents/${documentId}`;
+
     const fieldSummary = mappedFields.map((f) => ({
       fieldLabel: f.fieldMeta.label || f.fieldMeta.hubspotMapping.propertyLabel,
       hubspotProperty: f.fieldMeta.hubspotMapping.propertyLabel,
@@ -190,11 +280,13 @@ exports.main = async (context = {}) => {
     }));
 
     console.log(
-      `Vertrag versendet: Deal ${dealId} -> Template ${templateId} -> Empfaenger ${contact.email} (${prefillFields.length} Felder befuellt)`,
+      `Dokument erstellt (Draft): Deal ${dealId} -> Template ${templateId} -> Empfaenger ${contact.email} (${prefillFields.length} Felder befuellt)`,
     );
 
     return {
-      documentId: result.documentId || result.id,
+      envelopeId,
+      documentId,
+      previewUrl,
       recipient: {
         name: recipientName,
         email: contact.email,

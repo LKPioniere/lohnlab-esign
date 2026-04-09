@@ -241,9 +241,6 @@ msgstr "{0, plural, other {你即将删除 # 个模板。}}"
 
 #. placeholder {0}: _(FRIENDLY_FIELD_TYPE[fieldType as FieldType])
 #. placeholder {0}: route.label
-#. placeholder {0}: step.descriptionKey
-#: apps/remix/app/components/dialogs/hubspot-guidance-dialog.tsx
-#: apps/remix/app/components/dialogs/hubspot-guidance-dialog.tsx
 #: apps/remix/app/components/general/document-signing/document-signing-auto-sign.tsx
 #: apps/remix/app/routes/_authenticated+/o.$orgUrl.settings._layout.tsx
 #: apps/remix/app/routes/_authenticated+/t.$teamUrl+/settings._layout.tsx
@@ -2189,6 +2186,10 @@ msgstr "横幅已更新"
 msgid "Before you get started, please confirm your email address by clicking the button below:"
 msgstr "在开始之前，请点击下方按钮确认您的邮箱地址："
 
+#: apps/remix/app/components/forms/editor/editor-field-hubspot-mapping.tsx
+msgid "Betrag, Dealname, Konditionen, Custom-Properties"
+msgstr ""
+
 #: apps/remix/app/components/general/settings-nav-desktop.tsx
 #: apps/remix/app/components/general/settings-nav-mobile.tsx
 #: apps/remix/app/routes/_authenticated+/o.$orgUrl.settings._layout.tsx
@@ -2662,10 +2663,6 @@ msgstr "折叠侧边栏"
 msgid "Communication"
 msgstr "通信"
 
-#: apps/remix/app/components/forms/editor/editor-field-hubspot-mapping.tsx
-msgid "Company"
-msgstr ""
-
 #: apps/remix/app/components/dialogs/organisation-create-dialog.tsx
 msgid "Compare all plans and features in detail"
 msgstr "详细比较所有套餐和功能"
@@ -2839,10 +2836,6 @@ msgstr "确认邮件已发送"
 #: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
 msgid "Consent to Electronic Transactions"
 msgstr "同意以电子方式进行交易"
-
-#: apps/remix/app/components/forms/editor/editor-field-hubspot-mapping.tsx
-msgid "Contact"
-msgstr ""
 
 #: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
 msgid "Contact Information"
@@ -3133,10 +3126,6 @@ msgstr "创建组"
 #: apps/remix/app/components/dialogs/team-group-create-dialog.tsx
 msgid "Create Groups"
 msgstr "创建组"
-
-#: apps/remix/app/components/dialogs/hubspot-guidance-dialog.tsx
-msgid "Create HubSpot template"
-msgstr ""
 
 #: apps/remix/app/components/dialogs/folder-create-dialog.tsx
 msgid "Create New Folder"
@@ -4489,6 +4478,10 @@ msgstr "例如：Legal"
 msgid "eg. Mac"
 msgstr "例如：Mac"
 
+#: apps/remix/app/routes/_authenticated+/t.$teamUrl+/templates._index.tsx
+msgid "einbinden"
+msgstr ""
+
 #: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
 msgid "Electronic Delivery of Documents"
 msgstr "文档的电子交付"
@@ -5356,6 +5349,10 @@ msgstr ""
 msgid "Filter by status"
 msgstr "按状态筛选"
 
+#: apps/remix/app/components/forms/editor/editor-field-hubspot-mapping.tsx
+msgid "Firmenname, Branche, Adresse, USt-ID"
+msgstr ""
+
 #: apps/remix/app/components/dialogs/document-move-to-folder-dialog.tsx
 #: apps/remix/app/components/dialogs/envelopes-bulk-move-dialog.tsx
 #: apps/remix/app/components/dialogs/template-move-to-folder-dialog.tsx
@@ -5391,10 +5388,6 @@ msgstr "文件夹设置"
 #: apps/remix/app/components/dialogs/folder-update-dialog.tsx
 msgid "Folder updated successfully"
 msgstr "文件夹更新成功"
-
-#: apps/remix/app/components/dialogs/hubspot-guidance-dialog.tsx
-msgid "Follow these steps to create a template that automatically fills in data from HubSpot."
-msgstr ""
 
 #: apps/remix/app/components/forms/editor/editor-field-generic-field-forms.tsx
 #: packages/ui/primitives/document-flow/field-items-advanced-settings/date-field.tsx
@@ -5575,10 +5568,6 @@ msgstr "前往团队"
 msgid "Go to your <0>public profile settings</0> to add documents."
 msgstr "前往你的<0>公开资料设置</0>添加文档。"
 
-#: apps/remix/app/components/dialogs/hubspot-guidance-dialog.tsx
-msgid "Got it"
-msgstr ""
-
 #: packages/ui/primitives/signature-pad/signature-pad-color-picker.tsx
 msgid "Green"
 msgstr "绿色"
@@ -5738,8 +5727,8 @@ msgstr "水平"
 msgid "How long recipients have to complete this document after it is sent. Uses the team default when set to inherit."
 msgstr "设置此文档在发送后，收件人可完成签署的时间长度。当设置为继承时，将使用团队默认值。"
 
-#: apps/remix/app/components/forms/editor/editor-field-hubspot-mapping.tsx
-msgid "HubSpot Mapping"
+#: apps/remix/app/components/dialogs/hubspot-guidance-dialog.tsx
+msgid "HubSpot-Vorlage erstellen"
 msgstr ""
 
 #: apps/remix/app/routes/_unauthenticated+/organisation.sso.confirmation.$token.tsx
@@ -5825,6 +5814,10 @@ msgstr "如果你的验证器应用不支持二维码，你可以使用以下代
 #: apps/remix/app/routes/_unauthenticated+/organisation.sso.confirmation.$token.tsx
 msgid "Important: What This Means"
 msgstr "重要：这意味着什么"
+
+#: apps/remix/app/routes/_authenticated+/t.$teamUrl+/templates._index.tsx
+msgid "In"
+msgstr ""
 
 #: apps/remix/app/components/tables/user-billing-organisations-table.tsx
 #: packages/lib/constants/billing.ts
@@ -6117,8 +6110,16 @@ msgstr "加入时间"
 msgid "Joined {0}"
 msgstr "加入时间 {0}"
 
+#: apps/remix/app/components/forms/editor/editor-field-hubspot-mapping.tsx
+msgid "Keine Property gefunden."
+msgstr ""
+
 #: apps/remix/app/routes/_authenticated+/admin+/teams.$id.tsx
 msgid "Key identifiers and relationships for this team."
+msgstr ""
+
+#: apps/remix/app/components/forms/editor/editor-field-hubspot-mapping.tsx
+msgid "Kontakt"
 msgstr ""
 
 #: packages/lib/constants/i18n.ts
@@ -6348,7 +6349,6 @@ msgid "Loading suggestions..."
 msgstr "正在加载建议…"
 
 #: apps/remix/app/components/embed/embed-client-loading.tsx
-#: apps/remix/app/components/forms/editor/editor-field-hubspot-mapping.tsx
 #: apps/remix/app/components/general/default-recipients-multiselect-combobox.tsx
 #: apps/remix/app/components/general/document/document-page-view-recent-activity.tsx
 #: apps/remix/app/routes/_authenticated+/admin+/email-domains.$id.tsx
@@ -6553,6 +6553,10 @@ msgstr "管理者"
 #: packages/lib/constants/document-visibility.ts
 msgid "Managers and above"
 msgstr "管理者及以上"
+
+#: apps/remix/app/components/forms/editor/editor-field-hubspot-mapping.tsx
+msgid "Mapping"
+msgstr ""
 
 #: apps/remix/app/components/dialogs/ai-field-detection-dialog.tsx
 msgid "Mapping fields to recipients"
@@ -6951,10 +6955,6 @@ msgstr "目前您无需再执行任何操作。"
 msgid "No License Configured"
 msgstr "未配置许可证"
 
-#: apps/remix/app/components/forms/editor/editor-field-hubspot-mapping.tsx
-msgid "No mapping"
-msgstr ""
-
 #: apps/remix/app/components/dialogs/team-member-create-dialog.tsx
 msgid "No members selected"
 msgstr "未选择任何成员"
@@ -7137,7 +7137,7 @@ msgid "Number of teams allowed. 0 = Unlimited"
 msgstr "允许的团队数量。0 = 不限"
 
 #: apps/remix/app/components/forms/editor/editor-field-hubspot-mapping.tsx
-msgid "Object type"
+msgid "Objekttyp"
 msgstr ""
 
 #: apps/remix/app/components/general/admin-global-settings-section.tsx
@@ -8011,6 +8011,10 @@ msgstr "进度"
 msgid "Property"
 msgstr ""
 
+#: apps/remix/app/components/forms/editor/editor-field-hubspot-mapping.tsx
+msgid "Property suchen..."
+msgstr ""
+
 #: apps/remix/app/routes/_authenticated+/settings+/security.linked-accounts.tsx
 msgid "Provider"
 msgstr "提供方"
@@ -8497,7 +8501,6 @@ msgid "Required field"
 msgstr "必填字段"
 
 #: apps/remix/app/components/forms/editor/editor-field-generic-field-forms.tsx
-#: apps/remix/app/components/general/envelope-editor/envelope-editor-fields-page.tsx
 msgid "Required Field"
 msgstr "必填字段"
 
@@ -8963,10 +8966,6 @@ msgstr "选择或输入电子邮箱地址"
 #: apps/remix/app/components/general/document-signing/document-signing-auth-passkey.tsx
 msgid "Select passkey"
 msgstr "选择通行密钥"
-
-#: apps/remix/app/components/forms/editor/editor-field-hubspot-mapping.tsx
-msgid "Select property"
-msgstr ""
 
 #: apps/remix/app/components/tables/documents-table.tsx
 #: apps/remix/app/components/tables/templates-table.tsx
@@ -9489,6 +9488,10 @@ msgstr "站点设置"
 #: apps/remix/app/components/dialogs/ai-recipient-detection-dialog.tsx
 msgid "Skip"
 msgstr "跳过"
+
+#: apps/remix/app/components/dialogs/hubspot-guidance-dialog.tsx
+msgid "So erstellst du eine Vorlage, die automatisch mit Daten aus deinen HubSpot-Deals befüllt wird."
+msgstr ""
 
 #: packages/ui/primitives/document-flow/missing-signature-field-dialog.tsx
 msgid "Some signers have not been assigned a signature field. Please assign at least 1 signature field to each signer before proceeding."
@@ -11393,6 +11396,10 @@ msgstr "取消固定"
 msgid "Unsealed Documents"
 msgstr "未签章文档"
 
+#: apps/remix/app/components/forms/editor/editor-field-hubspot-mapping.tsx
+msgid "Unternehmen"
+msgstr ""
+
 #: apps/remix/app/components/dialogs/team-group-create-dialog.tsx
 msgid "Untitled Group"
 msgstr "未命名组"
@@ -11814,6 +11821,10 @@ msgstr "验证邮箱后即可上传文档。"
 msgid "Verify your team email address"
 msgstr "验证您的团队邮箱地址"
 
+#: apps/remix/app/components/dialogs/hubspot-guidance-dialog.tsx
+msgid "Verstanden"
+msgstr ""
+
 #: apps/remix/app/components/forms/editor/editor-field-checkbox-form.tsx
 #: apps/remix/app/components/forms/editor/editor-field-radio-form.tsx
 #: packages/ui/primitives/document-flow/field-items-advanced-settings/checkbox-field.tsx
@@ -12003,6 +12014,10 @@ msgstr "查看中"
 #: apps/remix/app/components/dialogs/folder-update-dialog.tsx
 msgid "Visibility"
 msgstr "可见性"
+
+#: apps/remix/app/components/forms/editor/editor-field-hubspot-mapping.tsx
+msgid "Vorname, Nachname, E-Mail, Telefon"
+msgstr ""
 
 #: apps/remix/app/components/general/stack-avatars-with-tooltip.tsx
 msgid "Waiting"
@@ -12495,6 +12510,10 @@ msgstr "你想提醒谁？"
 #: packages/ui/primitives/document-flow/field-item.tsx
 msgid "Width:"
 msgstr "宽度："
+
+#: apps/remix/app/components/forms/editor/editor-field-hubspot-mapping.tsx
+msgid "Wird geladen..."
+msgstr ""
 
 #: apps/remix/app/routes/_unauthenticated+/articles.signature-disclosure.tsx
 msgid "Withdrawing Consent"

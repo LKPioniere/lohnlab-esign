@@ -1,8 +1,9 @@
 {
-  "name": "lohnlab-esign-extensions",
+  "name": "lohnlab-esign-cards",
   "version": "1.0.0",
   "description": "CRM Card UI fuer die LohnLab eSign HubSpot-Integration",
   "dependencies": {
-    "@hubspot/ui-extensions": "latest"
+    "@hubspot/ui-extensions": "latest",
+    "react": "^18.2.0"
   }
 }

@@ -1,14 +1,17 @@
 import { Trans } from '@lingui/react/macro';
 import {
-  BuildingIcon,
+  ArrowRightIcon,
   CheckCircleIcon,
+  ChevronDownIcon,
+  CircleDotIcon,
   FileUpIcon,
-  InfoIcon,
+  HashIcon,
   LinkIcon,
   MousePointerClickIcon,
-  UserIcon,
+  TypeIcon,
 } from 'lucide-react';
 
+import { Badge } from '@documenso/ui/primitives/badge';
 import { Button } from '@documenso/ui/primitives/button';
 import {
   Dialog,
@@ -27,137 +30,223 @@ type HubspotGuidanceDialogProps = {
   onOpenChange: (open: boolean) => void;
 };
 
-const STEPS = [
-  {
-    icon: FileUpIcon,
-    title: 'Dokument hochladen',
-    description: 'Lade deinen Vertrag oder dein Bestellformular als PDF-Vorlage hoch.',
-  },
-  {
-    icon: MousePointerClickIcon,
-    title: 'Felder platzieren',
-    description:
-      'Setze Text-, Zahl- oder Datumsfelder an die Stellen im Dokument, die mit HubSpot-Daten befüllt werden sollen.',
-  },
-  {
-    icon: LinkIcon,
-    title: 'HubSpot-Properties zuordnen',
-    description:
-      'Klicke auf ein Feld und wähle unter „HubSpot Mapping" den passenden Objekttyp und die Property aus.',
-  },
-  {
-    icon: CheckCircleIcon,
-    title: 'Speichern und nutzen',
-    description:
-      'Speichere die Vorlage. Sie erscheint dann in der HubSpot-Deal-Seitenleiste und kann mit einem Klick versendet werden.',
-  },
-] as const;
-
-const OBJECT_TYPE_HINTS = [
-  {
-    icon: LinkIcon,
-    label: 'Deal',
-    examples: 'Betrag, Dealname, Paketauswahl, individuelle Konditionen',
-  },
-  {
-    icon: UserIcon,
-    label: 'Kontakt',
-    examples: 'Vorname, Nachname, E-Mail, Telefonnummer',
-  },
-  {
-    icon: BuildingIcon,
-    label: 'Unternehmen',
-    examples: 'Firmenname, Branche, Adresse, USt-ID',
-  },
-] as const;
-
 export const HubspotGuidanceDialog = ({
   open,
   onOpenChange,
 }: HubspotGuidanceDialogProps) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
-        <DialogHeader>
-          <div className="mb-2 flex items-center gap-3">
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto p-0">
+        {/* Hero Header */}
+        <div className="bg-muted/30 border-b px-6 pt-8 pb-6">
+          <div className="flex items-center justify-center gap-5">
             <img
               src={hubspotLogoDark}
               alt="HubSpot"
-              className="h-6 dark:hidden"
+              className="h-16 dark:hidden"
             />
             <img
               src={hubspotLogoLight}
               alt="HubSpot"
-              className="hidden h-6 dark:block"
+              className="hidden h-16 dark:block"
             />
-            <span className="text-muted-foreground text-lg">+</span>
-            <span className="text-lg font-semibold">LohnLab eSign</span>
+            <span className="text-muted-foreground text-3xl font-light">+</span>
+            <div className="flex items-end gap-2">
+              <img
+                src="/static/logo-dark.png"
+                alt="LohnLab"
+                className="h-5 dark:hidden"
+              />
+              <img
+                src="/static/logo.png"
+                alt="LohnLab"
+                className="hidden h-5 dark:block"
+              />
+              <span className="-mb-[1px] text-base font-light leading-none text-muted-foreground dark:text-documenso">
+                eSign
+              </span>
+            </div>
           </div>
-          <DialogTitle>
-            <Trans>HubSpot-Vorlage erstellen</Trans>
-          </DialogTitle>
-          <DialogDescription>
-            <Trans>
-              So erstellst du eine Vorlage, die automatisch mit Daten aus
-              HubSpot befüllt wird.
-            </Trans>
-          </DialogDescription>
-        </DialogHeader>
+          <div className="mt-4 text-center">
+            <DialogHeader className="items-center">
+              <DialogTitle className="text-xl">
+                <Trans>HubSpot-Vorlage erstellen</Trans>
+              </DialogTitle>
+              <DialogDescription className="max-w-md">
+                <Trans>
+                  So erstellst du eine Vorlage, die automatisch mit Daten aus
+                  deinen HubSpot-Deals befüllt wird.
+                </Trans>
+              </DialogDescription>
+            </DialogHeader>
+          </div>
+        </div>
 
-        <div className="space-y-4 py-2">
-          {STEPS.map((step, index) => (
-            <div key={index} className="flex gap-3">
-              <div className="bg-primary/10 text-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-full">
-                <step.icon className="h-4 w-4" />
-              </div>
-              <div>
-                <p className="text-sm font-medium">
-                  {index + 1}. {step.title}
-                </p>
-                <p className="text-muted-foreground text-xs">
-                  {step.description}
-                </p>
+        <div className="space-y-6 px-6 py-5">
+          {/* Step 1 */}
+          <StepSection number={1} icon={FileUpIcon} title="Dokument hochladen">
+            <p className="text-muted-foreground text-sm">
+              Lade deinen Vertrag oder dein Bestellformular als PDF-Vorlage
+              hoch.
+            </p>
+          </StepSection>
+
+          {/* Step 2 */}
+          <StepSection
+            number={2}
+            icon={MousePointerClickIcon}
+            title="Felder platzieren"
+          >
+            <p className="text-muted-foreground text-sm">
+              Ziehe Felder auf die Stellen im Dokument, die mit HubSpot-Daten
+              befüllt werden sollen.
+            </p>
+            {/* Visual mockup: document with fields */}
+            <div className="bg-muted/40 mt-3 rounded-lg border p-4">
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <div className="bg-background h-3 w-32 rounded" />
+                  <div className="bg-background h-3 w-20 rounded" />
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-muted-foreground text-xs">
+                    Firma:
+                  </span>
+                  <div className="border-primary/60 bg-primary/5 flex items-center gap-1 rounded border border-dashed px-2 py-1">
+                    <TypeIcon className="text-primary h-3 w-3" />
+                    <span className="text-primary text-xs font-medium">
+                      Firmenname
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-muted-foreground text-xs">
+                    Betrag:
+                  </span>
+                  <div className="border-primary/60 bg-primary/5 flex items-center gap-1 rounded border border-dashed px-2 py-1">
+                    <HashIcon className="text-primary h-3 w-3" />
+                    <span className="text-primary text-xs font-medium">
+                      1.250,00 €
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-muted-foreground text-xs">
+                    Paket:
+                  </span>
+                  <div className="border-primary/60 bg-primary/5 flex items-center gap-1 rounded border border-dashed px-2 py-1">
+                    <CircleDotIcon className="text-primary h-3 w-3" />
+                    <span className="text-primary text-xs font-medium">
+                      ○ A &nbsp; ● B &nbsp; ○ C
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
-          ))}
-        </div>
+          </StepSection>
 
-        <div className="bg-muted/50 rounded-lg p-3 space-y-2">
-          <p className="text-sm font-medium flex items-center gap-1.5">
-            <InfoIcon className="h-4 w-4" />
-            <Trans>Welchen Objekttyp wähle ich?</Trans>
-          </p>
-          {OBJECT_TYPE_HINTS.map((hint) => (
-            <div key={hint.label} className="flex items-start gap-2 text-xs">
-              <hint.icon className="text-muted-foreground mt-0.5 h-3.5 w-3.5 shrink-0" />
-              <p>
-                <span className="font-medium">{hint.label}:</span>{' '}
-                <span className="text-muted-foreground">{hint.examples}</span>
-              </p>
+          {/* Step 3 */}
+          <StepSection
+            number={3}
+            icon={LinkIcon}
+            title="HubSpot-Properties zuordnen"
+          >
+            <p className="text-muted-foreground text-sm">
+              Klicke auf ein Feld – in der Seitenleiste erscheint der Bereich
+              „HubSpot Mapping". Wähle dort den Objekttyp und die Property aus.
+            </p>
+            {/* Visual mockup: editor sidebar mapping */}
+            <div className="bg-muted/40 mt-3 rounded-lg border p-4">
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 border-b pb-2">
+                  <img
+                    src={hubspotLogoDark}
+                    alt="HubSpot"
+                    className="h-7 dark:hidden"
+                  />
+                  <img
+                    src={hubspotLogoLight}
+                    alt="HubSpot"
+                    className="hidden h-7 dark:block"
+                  />
+                  <span className="text-xs font-medium">Mapping</span>
+                </div>
+
+                {/* Mockup dropdown: Objekttyp */}
+                <div>
+                  <span className="text-muted-foreground text-[10px]">
+                    Objekttyp
+                  </span>
+                  <div className="bg-background mt-0.5 flex items-center justify-between rounded border px-2 py-1.5">
+                    <span className="text-xs">Deal</span>
+                    <ChevronDownIcon className="text-muted-foreground h-3 w-3" />
+                  </div>
+                </div>
+
+                {/* Mockup dropdown: Property */}
+                <div>
+                  <span className="text-muted-foreground text-[10px]">
+                    Property
+                  </span>
+                  <div className="bg-background mt-0.5 flex items-center justify-between rounded border px-2 py-1.5">
+                    <span className="text-xs">Bestellbetrag</span>
+                    <ChevronDownIcon className="text-muted-foreground h-3 w-3" />
+                  </div>
+                </div>
+
+                {/* Result badge */}
+                <div className="flex items-center gap-1.5">
+                  <ArrowRightIcon className="text-muted-foreground h-3 w-3" />
+                  <Badge variant="secondary" className="text-[10px]">
+                    <LinkIcon className="mr-1 h-2.5 w-2.5" />
+                    Deal → Bestellbetrag
+                  </Badge>
+                </div>
+              </div>
             </div>
-          ))}
+          </StepSection>
+
+          {/* Step 4 */}
+          <StepSection
+            number={4}
+            icon={CheckCircleIcon}
+            title="Speichern und nutzen"
+          >
+            <p className="text-muted-foreground text-sm">
+              Speichere die Vorlage. Sie erscheint dann in der
+              HubSpot-Deal-Seitenleiste und kann mit einem Klick versendet
+              werden – alle Felder werden automatisch befüllt.
+            </p>
+            {/* Visual mockup: HubSpot CRM card */}
+            <div className="bg-muted/40 mt-3 rounded-lg border p-4">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between border-b pb-2">
+                  <span className="text-xs font-semibold">LohnLab eSign</span>
+                </div>
+                <p className="text-muted-foreground text-[11px]">
+                  Wähle eine Vertragsvorlage aus und versende sie mit den
+                  Deal-Daten zur Unterschrift.
+                </p>
+                <div>
+                  <span className="text-muted-foreground text-[10px]">
+                    Vorlage auswählen
+                  </span>
+                  <div className="bg-background mt-0.5 flex items-center justify-between rounded border px-2 py-1.5">
+                    <span className="text-xs">111_Bestellformular_LL</span>
+                    <ChevronDownIcon className="text-muted-foreground h-3 w-3" />
+                  </div>
+                </div>
+                <div className="bg-primary text-primary-foreground flex items-center justify-center rounded px-3 py-1.5 text-xs font-medium">
+                  Vertrag senden
+                </div>
+              </div>
+            </div>
+          </StepSection>
+
         </div>
 
-        <div className="bg-muted/50 rounded-lg p-3 space-y-1.5">
-          <p className="text-sm font-medium flex items-center gap-1.5">
-            <InfoIcon className="h-4 w-4" />
-            <Trans>Beispiel: Bestellformular</Trans>
-          </p>
-          <p className="text-muted-foreground text-xs">
-            <Trans>
-              Du hast ein Bestellformular mit variablen Beträgen und
-              verschiedenen Paketen (z.B. Option A, B oder C)? Lege in HubSpot
-              ein Custom-Deal-Property an (z.B. &quot;Bestellbetrag&quot; oder
-              &quot;Paketauswahl&quot;) und trage den Wert pro Deal ein. Setze
-              dann im Editor ein Feld auf das Dokument und verknüpfe es mit
-              diesem Deal-Property – der Wert wird beim Versenden automatisch
-              eingesetzt.
-            </Trans>
-          </p>
-        </div>
-
-        <DialogFooter>
-          <Button onClick={() => onOpenChange(false)}>
+        <DialogFooter className="border-t px-6 py-4">
+          <Button onClick={() => onOpenChange(false)} className="w-full sm:w-auto">
             <Trans>Verstanden</Trans>
           </Button>
         </DialogFooter>
@@ -165,3 +254,34 @@ export const HubspotGuidanceDialog = ({
     </Dialog>
   );
 };
+
+const StepSection = ({
+  number,
+  icon: Icon,
+  title,
+  children,
+}: {
+  number: number;
+  icon: React.ElementType;
+  title: string;
+  children: React.ReactNode;
+}) => {
+  return (
+    <div className="flex gap-4">
+      <div className="flex flex-col items-center">
+        <div className="bg-primary text-primary-foreground flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-semibold">
+          {number}
+        </div>
+        <div className="bg-border mt-1 w-px flex-1" />
+      </div>
+      <div className="pb-2 flex-1">
+        <div className="flex items-center gap-2 mb-1">
+          <Icon className="text-primary h-4 w-4" />
+          <p className="text-sm font-semibold">{title}</p>
+        </div>
+        {children}
+      </div>
+    </div>
+  );
+};
+

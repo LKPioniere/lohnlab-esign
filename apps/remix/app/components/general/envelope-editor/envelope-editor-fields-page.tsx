@@ -15,6 +15,7 @@ import { PDF_VIEWER_ERROR_MESSAGES } from '@documenso/lib/constants/pdf-viewer-i
 import type { NormalizedFieldWithContext } from '@documenso/lib/server-only/ai/envelope/detect-fields/types';
 import {
   FIELD_META_DEFAULT_VALUES,
+  type TBaseFieldMeta,
   type TCheckboxFieldMeta,
   type TDateFieldMeta,
   type TDropdownFieldMeta,
@@ -33,7 +34,6 @@ import { cn } from '@documenso/ui/lib/utils';
 import { Alert, AlertDescription, AlertTitle } from '@documenso/ui/primitives/alert';
 import { Button } from '@documenso/ui/primitives/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@documenso/ui/primitives/card';
-import { Checkbox } from '@documenso/ui/primitives/checkbox';
 import { FRIENDLY_FIELD_TYPE } from '@documenso/ui/primitives/document-flow/types';
 import {
   Tooltip,
@@ -309,15 +309,26 @@ export const EnvelopeEditorFieldsPage = () => {
                 <Card>
                   <CardHeader className="pb-3">
                     <CardTitle className="text-sm">
-                      {_(FRIENDLY_FIELD_TYPE[selectedField.type])}{' '}
                       {(() => {
+                        const meta = selectedField.fieldMeta as TBaseFieldMeta | undefined;
+                        const hubspotLabel = meta?.hubspotMapping?.propertyLabel;
+
+                        if (hubspotLabel) {
+                          return hubspotLabel;
+                        }
+
+                        if (meta?.label) {
+                          return meta.label;
+                        }
+
                         const sameTypeFields = editorFields.localFields.filter(
                           (f) => f.type === selectedField.type,
                         );
                         const index = sameTypeFields.findIndex(
                           (f) => f.formId === selectedField.formId,
                         );
-                        return index + 1;
+
+                        return `${_(FRIENDLY_FIELD_TYPE[selectedField.type])} ${index + 1}`;
                       })()}
                     </CardTitle>
                   </CardHeader>
@@ -347,30 +358,6 @@ export const EnvelopeEditorFieldsPage = () => {
                           className="w-full"
                           align="end"
                         />
-                      </div>
-                    )}
-
-                    {/* Required field toggle */}
-                    {selectedField.fieldMeta && (
-                      <div className="flex items-center">
-                        <Checkbox
-                          id="sidebar-field-required"
-                          checked={
-                            (selectedField.fieldMeta as { required?: boolean }).required !== false
-                          }
-                          onCheckedChange={(checked) => {
-                            updateSelectedFieldMeta({
-                              ...selectedField.fieldMeta!,
-                              required: !!checked,
-                            } as TFieldMetaSchema);
-                          }}
-                        />
-                        <label
-                          className="ml-2 text-sm text-muted-foreground"
-                          htmlFor="sidebar-field-required"
-                        >
-                          <Trans>Required Field</Trans>
-                        </label>
                       </div>
                     )}
 

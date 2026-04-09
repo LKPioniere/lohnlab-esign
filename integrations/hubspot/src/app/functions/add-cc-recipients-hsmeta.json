@@ -1,0 +1,8 @@
+{
+  "uid": "add-cc-recipients",
+  "type": "app-function",
+  "config": {
+    "entrypoint": "/app/functions/add-cc-recipients.js",
+    "secretKeys": ["ESIGN_API_KEY", "ESIGN_BASE_URL"]
+  }
+}

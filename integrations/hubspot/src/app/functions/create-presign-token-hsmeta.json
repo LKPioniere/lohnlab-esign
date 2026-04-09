@@ -1,0 +1,8 @@
+{
+  "uid": "create-presign-token",
+  "type": "app-function",
+  "config": {
+    "entrypoint": "/app/functions/create-presign-token.js",
+    "secretKeys": ["ESIGN_API_KEY", "ESIGN_BASE_URL"]
+  }
+}

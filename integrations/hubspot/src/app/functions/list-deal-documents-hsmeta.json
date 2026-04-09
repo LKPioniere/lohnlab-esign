@@ -1,0 +1,8 @@
+{
+  "uid": "list-deal-documents",
+  "type": "app-function",
+  "config": {
+    "entrypoint": "/app/functions/list-deal-documents.js",
+    "secretKeys": ["ESIGN_API_KEY", "ESIGN_BASE_URL"]
+  }
+}

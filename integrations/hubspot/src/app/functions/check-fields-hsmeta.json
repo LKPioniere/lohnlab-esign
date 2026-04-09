@@ -1,0 +1,8 @@
+{
+  "uid": "check-fields",
+  "type": "app-function",
+  "config": {
+    "entrypoint": "/app/functions/check-fields.js",
+    "secretKeys": ["ESIGN_API_KEY", "ESIGN_BASE_URL"]
+  }
+}

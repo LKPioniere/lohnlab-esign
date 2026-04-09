@@ -1,0 +1,8 @@
+{
+  "uid": "send-contract",
+  "type": "app-function",
+  "config": {
+    "entrypoint": "/app/functions/send-contract.js",
+    "secretKeys": ["ESIGN_API_KEY", "ESIGN_BASE_URL"]
+  }
+}

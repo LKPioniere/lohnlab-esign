@@ -1,0 +1,8 @@
+{
+  "uid": "get-templates",
+  "type": "app-function",
+  "config": {
+    "entrypoint": "/app/functions/get-templates.js",
+    "secretKeys": ["ESIGN_API_KEY", "ESIGN_BASE_URL"]
+  }
+}
