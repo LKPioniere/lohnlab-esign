@@ -12,7 +12,7 @@ const ERROR_MESSAGES = {
 
 exports.main = async (context = {}) => {
   try {
-    const { templateId, contactId, contactEmail, contactName, fieldOverrides: fieldOverridesJson, assignedProperty } = context.parameters || {};
+    const { templateId, contactId, contactEmail, contactName, fieldOverrides: fieldOverridesJson } = context.parameters || {};
     const fieldOverrides = fieldOverridesJson ? JSON.parse(fieldOverridesJson) : {};
     const dealProperties = context.propertiesToSend || {};
     const dealId = dealProperties.hs_object_id;
@@ -256,7 +256,7 @@ exports.main = async (context = {}) => {
         ],
         prefillFields,
         distributeDocument: false,
-        externalId: assignedProperty ? `hubspot-deal-${dealId}:${assignedProperty}` : `hubspot-deal-${dealId}`,
+        externalId: `hubspot-deal-${dealId}`,
       }),
     });
 

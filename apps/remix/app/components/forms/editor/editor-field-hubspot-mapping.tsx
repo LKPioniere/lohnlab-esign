@@ -1,7 +1,14 @@
 import { useMemo, useState } from 'react';
 
 import { Trans, useLingui } from '@lingui/react/macro';
-import { ChevronDownIcon, ChevronRightIcon, LinkIcon, SearchIcon, XIcon } from 'lucide-react';
+import {
+  AlertTriangleIcon,
+  ChevronDownIcon,
+  ChevronRightIcon,
+  LinkIcon,
+  SearchIcon,
+  XIcon,
+} from 'lucide-react';
 
 import type { THubspotMapping } from '@documenso/lib/types/field-meta';
 import { trpc } from '@documenso/trpc/react';
@@ -43,24 +50,28 @@ export const EditorFieldHubspotMapping = ({
     value?.objectType || 'deals',
   );
 
-  const { data: enabledCheck } = trpc.hubspot.getProperties.useQuery(
+  const {
+    data: enabledCheck,
+    isLoading: isCheckLoading,
+    error: checkError,
+  } = trpc.hubspot.getProperties.useQuery(
     { objectType: 'deals' },
     { retry: false, refetchOnWindowFocus: false },
   );
+
+  const isTokenMissing = !isCheckLoading && enabledCheck && !enabledCheck.enabled;
+  const isApiError = !isCheckLoading && !!checkError;
+  const hasConfigError = isTokenMissing || isApiError;
 
   const { data: propertiesData, isLoading: isLoadingProperties } =
     trpc.hubspot.getProperties.useQuery(
       { objectType: objectType as 'deals' | 'contacts' | 'companies' },
       {
-        enabled: !!enabledCheck?.enabled && isExpanded,
+        enabled: !!enabledCheck?.enabled && isExpanded && !hasConfigError,
         retry: false,
         refetchOnWindowFocus: false,
       },
     );
-
-  if (!enabledCheck?.enabled) {
-    return null;
-  }
 
   const properties = propertiesData?.properties || [];
 
@@ -129,7 +140,33 @@ export const EditorFieldHubspotMapping = ({
 
       {isExpanded && (
         <div className="space-y-2 pb-1">
-          {value ? (
+          {hasConfigError ? (
+            <div className="bg-destructive/10 border-destructive/30 rounded-md border p-3">
+              <div className="flex items-start gap-2">
+                <AlertTriangleIcon className="text-destructive mt-0.5 h-4 w-4 shrink-0" />
+                <div className="space-y-1">
+                  <p className="text-destructive text-xs font-medium">
+                    {isTokenMissing ? (
+                      <Trans>HubSpot Access Token fehlt</Trans>
+                    ) : (
+                      <Trans>HubSpot-Verbindung fehlgeschlagen</Trans>
+                    )}
+                  </p>
+                  <p className="text-muted-foreground text-[10px] leading-tight">
+                    {isTokenMissing ? (
+                      <Trans>
+                        Setze NEXT_PRIVATE_HUBSPOT_ACCESS_TOKEN in der .env-Datei, um HubSpot-Properties zu laden.
+                      </Trans>
+                    ) : (
+                      <Trans>
+                        Der HubSpot Access Token ist ungültig oder abgelaufen. Prüfe NEXT_PRIVATE_HUBSPOT_ACCESS_TOKEN in der .env-Datei.
+                      </Trans>
+                    )}
+                  </p>
+                </div>
+              </div>
+            </div>
+          ) : value ? (
             <div className="flex items-center gap-2">
               <Badge variant="secondary" className="flex items-center gap-1.5">
                 <LinkIcon className="h-3 w-3" />

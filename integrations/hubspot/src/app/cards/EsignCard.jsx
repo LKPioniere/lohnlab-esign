@@ -19,14 +19,12 @@ import {
 } from '@hubspot/ui-extensions';
 
 const MODAL_ID = 'esign-send-modal';
-const ATTACH_MODAL_ID = 'esign-attach-modal';
 
 const STEPS = {
   LOADING_CONTACTS: 'LOADING_CONTACTS',
   SELECT_CONTACT: 'SELECT_CONTACT',
   LOADING_FIELDS: 'LOADING_FIELDS',
   REVIEW_FIELDS: 'REVIEW_FIELDS',
-  ASSIGN_PROPERTY: 'ASSIGN_PROPERTY',
   CREATING: 'CREATING',
   ADDING_CC: 'ADDING_CC',
   PREVIEW: 'PREVIEW',
@@ -144,7 +142,6 @@ const EsignCard = ({ context, actions }) => {
       <DocumentList
         documents={documents}
         loading={documentsLoading}
-        actions={actions}
         onRefresh={loadDocuments}
       />
 
@@ -197,23 +194,19 @@ const EsignCard = ({ context, actions }) => {
 
 // ─── Document List ──────────────────────────────────────────────────────────────
 
-const DocumentList = ({ documents, loading, actions, onRefresh }) => {
+const DocumentList = ({ documents, loading, onRefresh }) => {
   const [expanded, setExpanded] = useState(false);
-  const [attachingDocId, setAttachingDocId] = useState(null);
+  const [attachingDoc, setAttachingDoc] = useState(null);
   const [fileProperties, setFileProperties] = useState([]);
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [attachLoading, setAttachLoading] = useState(false);
   const [attachResult, setAttachResult] = useState(null);
   const [attachError, setAttachError] = useState(null);
 
-  if (loading) {
-    return <LoadingSpinner label="Dokumente laden..." />;
-  }
+  const docCount = loading ? 0 : documents.length;
 
-  const docCount = documents.length;
-
-  const handleAttachStart = (doc) => {
-    setAttachingDocId(doc.documentId);
+  const loadFileProperties = useCallback((doc) => {
+    setAttachingDoc(doc);
     setSelectedProperty(doc.assignedProperty || null);
     setAttachResult(null);
     setAttachError(null);
@@ -231,42 +224,48 @@ const DocumentList = ({ documents, loading, actions, onRefresh }) => {
         setFileProperties([]);
         setAttachLoading(false);
       });
+  }, []);
 
-    actions.openOverlay(ATTACH_MODAL_ID);
-  };
-
-  const handleAttach = () => {
-    if (!attachingDocId) {
+  const handleAttach = useCallback(() => {
+    if (!attachingDoc) {
       return;
     }
     setAttachLoading(true);
     setAttachError(null);
 
+    const params = {
+      documentId: String(attachingDoc.documentId),
+      documentTitle: attachingDoc.title || '',
+    };
+    if (selectedProperty) {
+      params.dealPropertyName = selectedProperty;
+    }
+
     hubspot.serverless('attach-document', {
-      propertiesToSend: ['hs_object_id'],
-      parameters: {
-        documentId: String(attachingDocId),
-        dealPropertyName: selectedProperty || undefined,
-      },
+      propertiesToSend: ['hs_object_id', 'dealname', 'company'],
+      parameters: params,
     })
       .then((r) => {
-        if (r.error) {
-          throw new Error(r.error);
+        if (r && r.error) {
+          setAttachError(r.error);
+          setAttachLoading(false);
+          return;
         }
         setAttachResult(r);
         setAttachLoading(false);
+        onRefresh();
       })
       .catch((err) => {
         setAttachError(err.message || 'PDF konnte nicht abgelegt werden.');
         setAttachLoading(false);
       });
-  };
+  }, [attachingDoc, selectedProperty, onRefresh]);
 
   return (
     <>
       <Flex direction="row" gap="sm" align="center" justify="between">
         <Text format={{ fontWeight: 'bold' }}>
-          Dokumente ({docCount})
+          Dokumente {!loading && `(${docCount})`}
         </Text>
         {docCount > 0 && (
           <Button variant="secondary" size="small" onClick={() => setExpanded(!expanded)}>
@@ -275,26 +274,91 @@ const DocumentList = ({ documents, loading, actions, onRefresh }) => {
         )}
       </Flex>
 
-      {docCount === 0 && (
+      {loading && (
+        <LoadingSpinner label="Dokumente laden..." />
+      )}
+
+      {!loading && docCount === 0 && (
         <Alert title="Keine Dokumente" variant="info">
           Noch keine Dokumente für diesen Deal.
         </Alert>
       )}
 
-      {expanded && docCount > 0 && (
+      {!loading && expanded && docCount > 0 && (
         <Box css={{ borderTop: '1px solid #cbd6e2', paddingTop: '8px' }}>
           <Flex direction="column" gap="xs">
             {documents.map((doc, idx) => (
               <React.Fragment key={doc.documentId}>
                 <Flex direction="row" gap="sm" align="center" wrap="wrap">
                   <Box css={{ flex: '1 1 auto', minWidth: '0' }}>
-                    <Link href={doc.previewUrl} external={true}>
+                    <Link href={{ url: doc.previewUrl, external: true }}>
                       {doc.title}
                     </Link>
                   </Box>
                   <Tag variant={doc.statusVariant}>{doc.statusLabel}</Tag>
                   {doc.status === 'COMPLETED' && (
-                    <Button variant="secondary" size="small" onClick={() => handleAttachStart(doc)}>
+                    <Button
+                      variant="secondary"
+                      size="small"
+                      onClick={() => loadFileProperties(doc)}
+                      overlay={
+                        <Modal
+                          id={`esign-attach-${doc.documentId}`}
+                          title="PDF im Deal ablegen"
+                          width="md"
+                          onClose={() => {
+                            if (attachResult) {
+                              onRefresh();
+                            }
+                          }}
+                        >
+                          {attachLoading ? (
+                            <ModalBody>
+                              <LoadingSpinner label="Wird verarbeitet..." />
+                            </ModalBody>
+                          ) : attachResult ? (
+                            <ModalBody>
+                              <Alert title="PDF abgelegt" variant="success">
+                                {attachResult.dealPropertyName
+                                  ? 'Das signierte PDF wurde hochgeladen und dem Deal-Feld zugeordnet.'
+                                  : 'Das signierte PDF wurde als Anhang am Deal abgelegt.'}
+                              </Alert>
+                              <Text>Du kannst diesen Dialog jetzt schließen.</Text>
+                            </ModalBody>
+                          ) : attachError ? (
+                            <>
+                              <ModalBody>
+                                <Alert title="Fehler" variant="error">{attachError}</Alert>
+                              </ModalBody>
+                              <ModalFooter>
+                                <Button variant="primary" onClick={() => setAttachError(null)}>Nochmal versuchen</Button>
+                              </ModalFooter>
+                            </>
+                          ) : (
+                            <>
+                              <ModalBody>
+                                <Flex direction="column" gap="md">
+                                  <Text>
+                                    Das signierte PDF wird heruntergeladen und in den HubSpot-Dateien abgelegt.
+                                    Optional kannst du es einem Deal-Feld zuordnen.
+                                  </Text>
+                                  <Select
+                                    label="Deal-Feld zuordnen"
+                                    placeholder="Feld wählen..."
+                                    options={buildFilePropertyOptions(fileProperties)}
+                                    value={selectedProperty || '__none__'}
+                                    onChange={(v) => setSelectedProperty(v === '__none__' ? null : v)}
+                                  />
+                                </Flex>
+                              </ModalBody>
+                              <ModalFooter>
+                                <Button variant="primary" onClick={handleAttach}>PDF ablegen</Button>
+                              </ModalFooter>
+                            </>
+                          )}
+                        </Modal>
+                      }
+                    >
                       PDF ablegen
                     </Button>
                   )}
@@ -308,110 +372,11 @@ const DocumentList = ({ documents, loading, actions, onRefresh }) => {
         </Box>
       )}
 
-      <AttachModal
-        attachLoading={attachLoading}
-        attachResult={attachResult}
-        attachError={attachError}
-        fileProperties={fileProperties}
-        selectedProperty={selectedProperty}
-        onPropertyChange={(v) => setSelectedProperty(v === '__none__' ? null : v)}
-        onAttach={handleAttach}
-        onRetry={() => setAttachError(null)}
-        onClose={() => {
-          actions.closeOverlay(ATTACH_MODAL_ID);
-          onRefresh();
-        }}
-        onCancel={() => actions.closeOverlay(ATTACH_MODAL_ID)}
-      />
     </>
   );
 };
 
-// ─── Attach Modal ───────────────────────────────────────────────────────────────
-
-const AttachModal = ({
-  attachLoading,
-  attachResult,
-  attachError,
-  fileProperties,
-  selectedProperty,
-  onPropertyChange,
-  onAttach,
-  onRetry,
-  onClose,
-  onCancel,
-}) => {
-  const renderBody = () => {
-    if (attachLoading) {
-      return (
-        <ModalBody>
-          <LoadingSpinner label="Wird verarbeitet..." />
-        </ModalBody>
-      );
-    }
-
-    if (attachResult) {
-      return (
-        <>
-          <ModalBody>
-            <Alert title="PDF abgelegt" variant="success">
-              {attachResult.dealPropertyName
-                ? 'Das signierte PDF wurde hochgeladen und dem Deal-Feld zugeordnet.'
-                : 'Das signierte PDF wurde in den HubSpot-Dateien abgelegt.'}
-            </Alert>
-          </ModalBody>
-          <ModalFooter>
-            <Button variant="primary" onClick={onClose}>Schließen</Button>
-          </ModalFooter>
-        </>
-      );
-    }
-
-    if (attachError) {
-      return (
-        <>
-          <ModalBody>
-            <Alert title="Fehler" variant="error">{attachError}</Alert>
-          </ModalBody>
-          <ModalFooter>
-            <Button variant="primary" onClick={onRetry}>Nochmal versuchen</Button>
-            <Button onClick={onCancel}>Abbrechen</Button>
-          </ModalFooter>
-        </>
-      );
-    }
-
-    return (
-      <>
-        <ModalBody>
-          <Flex direction="column" gap="md">
-            <Text>
-              Das signierte PDF wird heruntergeladen und in den HubSpot-Dateien abgelegt.
-              Optional kannst du es einem Deal-Feld zuordnen.
-            </Text>
-            <Select
-              label="Deal-Feld zuordnen"
-              placeholder="Feld wählen..."
-              options={buildFilePropertyOptions(fileProperties)}
-              value={selectedProperty || '__none__'}
-              onChange={onPropertyChange}
-            />
-          </Flex>
-        </ModalBody>
-        <ModalFooter>
-          <Button variant="primary" onClick={onAttach}>PDF ablegen</Button>
-          <Button onClick={onCancel}>Abbrechen</Button>
-        </ModalFooter>
-      </>
-    );
-  };
-
-  return (
-    <Modal id={ATTACH_MODAL_ID} title="PDF im Deal ablegen" width="md">
-      {renderBody()}
-    </Modal>
-  );
-};
+// ─── Attach Modal (inlined in DocumentList Button overlay) ──────────────────
 
 // ─── Send Modal ─────────────────────────────────────────────────────────────────
 
@@ -427,10 +392,6 @@ const SendModal = ({ templateId, templateTitle, actions, onSent }) => {
   const [reviewPage, setReviewPage] = useState(0);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
-
-  const [fileProperties, setFileProperties] = useState([]);
-  const [assignedProperty, setAssignedProperty] = useState(null);
-  const [filePropsLoading, setFilePropsLoading] = useState(false);
 
   const [ccRecipientIds, setCcRecipientIds] = useState([]);
 
@@ -514,24 +475,6 @@ const SendModal = ({ templateId, templateTitle, actions, onSent }) => {
     setFieldValues((prev) => ({ ...prev, [key]: value }));
   }, []);
 
-  const handleGoToAssignProperty = useCallback(() => {
-    setFilePropsLoading(true);
-    setStep(STEPS.ASSIGN_PROPERTY);
-
-    hubspot.serverless('get-file-properties', {
-      propertiesToSend: ['hs_object_id'],
-      parameters: {},
-    })
-      .then((r) => {
-        setFileProperties((r && r.properties) || []);
-        setFilePropsLoading(false);
-      })
-      .catch(() => {
-        setFileProperties([]);
-        setFilePropsLoading(false);
-      });
-  }, []);
-
   const [skipPreview, setSkipPreview] = useState(false);
 
   const handleCreate = useCallback((directSend) => {
@@ -561,7 +504,6 @@ const SendModal = ({ templateId, templateTitle, actions, onSent }) => {
         contactEmail: email,
         contactName: name,
         fieldOverrides: Object.keys(overrides).length > 0 ? JSON.stringify(overrides) : undefined,
-        assignedProperty: assignedProperty || undefined,
       },
     })
       .then((r) => {
@@ -618,7 +560,7 @@ const SendModal = ({ templateId, templateTitle, actions, onSent }) => {
         setError(err.message || 'Dokument konnte nicht erstellt werden.');
         setStep(STEPS.ERROR);
       });
-  }, [templateId, selectedContactId, contacts, manualEmail, fields, fieldValues, assignedProperty, ccRecipientIds, teamMembers]);
+  }, [templateId, selectedContactId, contacts, manualEmail, fields, fieldValues, ccRecipientIds, teamMembers]);
 
   const distributeEnvelope = useCallback((envelopeId) => {
     setStep(STEPS.DISTRIBUTING);
@@ -690,22 +632,9 @@ const SendModal = ({ templateId, templateTitle, actions, onSent }) => {
           reviewPage={reviewPage}
           onFieldChange={handleFieldChange}
           onPageChange={setReviewPage}
-          onNext={handleGoToAssignProperty}
-          onBack={() => setStep(STEPS.SELECT_CONTACT)}
-        />
-      );
-    }
-
-    if (step === STEPS.ASSIGN_PROPERTY) {
-      return (
-        <AssignPropertyStep
-          fileProperties={fileProperties}
-          filePropsLoading={filePropsLoading}
-          assignedProperty={assignedProperty}
-          onPropertyChange={(v) => setAssignedProperty(v === '__none__' ? null : v)}
-          onNext={() => handleCreate(false)}
+          onPreview={() => handleCreate(false)}
           onDirectSend={() => handleCreate(true)}
-          onBack={() => setStep(STEPS.REVIEW_FIELDS)}
+          onBack={() => setStep(STEPS.SELECT_CONTACT)}
         />
       );
     }
@@ -862,7 +791,8 @@ const ReviewFieldsStep = ({
   reviewPage,
   onFieldChange,
   onPageChange,
-  onNext,
+  onPreview,
+  onDirectSend,
   onBack,
 }) => {
   const selectedContact = contacts.find((c) => c.id === selectedContactId);
@@ -897,7 +827,8 @@ const ReviewFieldsStep = ({
           </Flex>
         </ModalBody>
         <ModalFooter>
-          <Button variant="primary" onClick={onNext}>Weiter</Button>
+          <Button variant="primary" onClick={onDirectSend}>Direkt senden</Button>
+          <Button variant="secondary" onClick={onPreview}>Vorschau</Button>
           <Button onClick={onBack}>Zurück</Button>
         </ModalFooter>
       </>
@@ -987,11 +918,16 @@ const ReviewFieldsStep = ({
       </ModalBody>
       <ModalFooter>
         {isLastPage ? (
-          <Button variant="primary" onClick={onNext} disabled={totalRequiredMissingCount > 0}>
-            {totalRequiredMissingCount > 0
-              ? `${totalRequiredMissingCount} Pflichtfeld${totalRequiredMissingCount > 1 ? 'er' : ''} fehlen`
-              : 'Weiter'}
-          </Button>
+          <>
+            <Button variant="primary" onClick={onDirectSend} disabled={totalRequiredMissingCount > 0}>
+              {totalRequiredMissingCount > 0
+                ? `${totalRequiredMissingCount} Pflichtfeld${totalRequiredMissingCount > 1 ? 'er' : ''} fehlen`
+                : 'Direkt senden'}
+            </Button>
+            <Button variant="secondary" onClick={onPreview} disabled={totalRequiredMissingCount > 0}>
+              Vorschau
+            </Button>
+          </>
         ) : (
           <Button variant="primary" onClick={() => onPageChange(safePageIndex + 1)}>
             Weiter
@@ -1002,51 +938,6 @@ const ReviewFieldsStep = ({
         ) : (
           <Button onClick={() => onPageChange(safePageIndex - 1)}>Zurück</Button>
         )}
-      </ModalFooter>
-    </>
-  );
-};
-
-// ─── Step: Assign Property ──────────────────────────────────────────────────────
-
-const AssignPropertyStep = ({
-  fileProperties,
-  filePropsLoading,
-  assignedProperty,
-  onPropertyChange,
-  onNext,
-  onDirectSend,
-  onBack,
-}) => {
-  if (filePropsLoading) {
-    return (
-      <ModalBody>
-        <LoadingSpinner label="Dokumentfelder werden geladen..." />
-      </ModalBody>
-    );
-  }
-
-  return (
-    <>
-      <ModalBody>
-        <Flex direction="column" gap="md">
-          <Text format={{ fontWeight: 'bold' }}>Dokumentfeld zuordnen</Text>
-          <Text>
-            Zu welchem Deal-Feld gehört dieses Dokument? Das signierte PDF kann später automatisch dort abgelegt werden.
-          </Text>
-          <Select
-            label="Deal-Feld"
-            placeholder="Feld wählen..."
-            options={buildFilePropertyOptions(fileProperties)}
-            value={assignedProperty || '__none__'}
-            onChange={onPropertyChange}
-          />
-        </Flex>
-      </ModalBody>
-      <ModalFooter>
-        <Button variant="primary" onClick={onDirectSend}>Direkt senden</Button>
-        <Button variant="secondary" onClick={onNext}>Vorschau</Button>
-        <Button onClick={onBack}>Zurück</Button>
       </ModalFooter>
     </>
   );
